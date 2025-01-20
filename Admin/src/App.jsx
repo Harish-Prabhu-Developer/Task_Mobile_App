@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+import Sidebar from "./components/navigation/Sidebar";
+import Dashboard from "./pages/Dashboard";
+import Project from "./pages/Project";
+import NotFound from "./pages/NotFound";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import User from "./pages/User";
+import Task from "./pages/Task";
+import { Mobilenavbar } from "./components/navigation/Mobilenavbar";
+function Layout() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="flex h-screen">
+    <div className="hidden sm:flex h-screen ">
+    <Sidebar />
+    <div className="flex-grow p-4 transition-all">
+      <Outlet />
+    </div>
+    </div>
+    <div className="sm:hidden w-full">
+      <Mobilenavbar />
+      <Outlet />
+    </div>
+    
+  </div>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route
+            index
+            path="/"
+            element={<Navigate to="/dashboard" replace />}
+          />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/projects" element={<Project />} />
+          <Route path="/users" element={<User />} />
+          <Route path="/tasks" element={<Task />} />
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+}
