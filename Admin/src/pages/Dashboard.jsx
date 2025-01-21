@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
+
 
 export default function Dashboard() {
+ 
   return (
-    <div>Dashboard</div>
+    <div>
+      <div>Dashboard</div>
+    </div>
   )
 }

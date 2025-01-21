@@ -11,18 +11,18 @@ import { Mobilenavbar } from "./components/navigation/Mobilenavbar";
 function Layout() {
   return (
     <div className="flex min-h-screen">
-    <div className="hidden sm:flex bg-fixed h-screen ">
-    <Sidebar />
-    <div className="flex-grow p-4 transition-all">
-      <Outlet />
+      <div className="hidden sm:flex bg-fixed h-screen ">
+        <Sidebar />
+        <div className="flex-grow p-4 transition-all">
+          <Outlet />
+        </div>
+      </div>
+      <div className="sm:hidden bg-fixed w-full">
+        <Mobilenavbar />
+        <Outlet />
+      </div>
+
     </div>
-    </div>
-    <div className="sm:hidden bg-fixed w-full">
-      <Mobilenavbar />
-      <Outlet />
-    </div>
-    
-  </div>
   );
 }
 
