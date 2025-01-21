@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { RiDashboard3Line } from "react-icons/ri";
 import { IoFolderOpenSharp, IoLogOut } from "react-icons/io5";
 import { FaUserPlus, FaTasks } from "react-icons/fa";
+import { BiSearch } from "react-icons/bi";
 import { Link, useLocation } from "react-router-dom";
 
 import profileImage from "../../assets/images/profile.png";
@@ -9,7 +10,7 @@ import companyLogo from "../../assets/images/comanylogo.png";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation(); // React Router hook to get current location
+  const location = useLocation();
 
   const MENU_ITEMS = [
     { id: "dashboard", name: "Dashboard", icon: <RiDashboard3Line /> },
@@ -18,15 +19,12 @@ const Sidebar = () => {
     { id: "tasks", name: "Tasks", icon: <FaTasks /> },
   ];
 
-  const isActive = (path) => location.pathname === path; // Function to check active route
-
   return (
     <div className="flex h-full">
       {/* Sidebar Container */}
       <div
-        className={`${
-          isOpen ? "w-72" : "w-20"
-        } bg-gradient-to-t from-cyan-950 to-blue-800 text-white transition-all duration-300 flex flex-col items-start relative h-full shadow-lg`}
+        className={`${isOpen ? "w-72" : "w-20"
+          } bg-gradient-to-t from-cyan-950 to-blue-800 text-white transition-all duration-300 flex flex-col items-start relative h-full shadow-lg`}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
@@ -34,15 +32,13 @@ const Sidebar = () => {
         <div className="flex items-center gap-4 px-4 mt-6 transition-all duration-300">
           <img
             src={companyLogo}
-            alt="Company Logo"
-            className={`transition-all duration-300 rounded-md ${
-              isOpen ? "w-10 h-10" : "w-8 h-8"
-            }`}
+            alt="swomb Logo"
+            className={`transition-all duration-300 rounded-md ${isOpen ? "w-10 h-10" : "w-8 h-8"
+              }`}
           />
           <h1
-            className={`text-xl font-bold text-white transition-opacity duration-300 ${
-              isOpen ? "opacity-100" : "opacity-0"
-            }`}
+            className={`text-xl font-bold text-white transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"
+              }`}
           >
             SWOMB
           </h1>
@@ -54,11 +50,10 @@ const Sidebar = () => {
             <div key={item.id} className="relative group">
               <Link
                 to={`/${item.id}`}
-                className={`flex items-center gap-4 p-3 rounded-lg bg-transparent hover:bg-slate-600 transition-all duration-300 ${
-                  isActive(`/${item.id}`)
+                className={`flex items-center gap-4 p-3 rounded-lg bg-transparent hover:bg-slate-600 transition-all duration-300 ${location.pathname === `/${item.id}`
                     ? "bg-blue-600 text-white"
                     : "text-white"
-                }`}
+                  }`}
               >
                 <i
                   className={`text-2xl transition-transform duration-300 group-hover:scale-110`}
@@ -66,13 +61,13 @@ const Sidebar = () => {
                   {item.icon}
                 </i>
                 <span
-                  className={`transition-opacity duration-300 ${
-                    isOpen ? "opacity-100" : "opacity-0"
-                  }`}
+                  className={`transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"
+                    }`}
                 >
                   {item.name}
                 </span>
               </Link>
+
             </div>
           ))}
         </nav>
@@ -84,23 +79,19 @@ const Sidebar = () => {
             <img
               src={profileImage}
               alt="Profile"
-              className={`rounded-full border-4 border-white transition-all duration-300 ${
-                isOpen ? "w-12 h-12" : "w-8 h-8"
-              }`}
+              className={`rounded-full border-4 border-white transition-all duration-300 ${isOpen ? "w-12 h-12" : "w-8 h-8"
+                }`}
             />
             <div
-              className={`transition-opacity duration-300 ${
-                isOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-              }`}
+              className={`transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+                }`}
             >
               <h2 className="text-sm font-semibold">John Doe</h2>
               <p className="text-xs text-yellow-300">Admin</p>
             </div>
-            {/* Logout */}
-            <div
-              className="p-4 transition-all duration-300 bg-transparent rounded-lg hover:bg-yellow-200"
-              onClick={() => alert("Are you sure you want to logout?")}
-            >
+            {/*Logout*/}
+            <div className="p-4 transition-all duration-300 bg-transparent rounded-lg hover:bg-yellow-200"
+              onClick={() => alert('Are you Sure Logout')}>
               <IoLogOut size={24} />
             </div>
           </div>
