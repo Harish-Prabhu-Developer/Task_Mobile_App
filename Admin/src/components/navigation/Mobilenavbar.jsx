@@ -34,7 +34,7 @@ export const Mobilenavbar = () => {
         <div className="flex gap-4">
           <img src={CompanyLogo}
                className="w-7 h-7 rounded-lg border-2 border-gray-300"/>
-          <h1 className="text-md font-bold">SWOMB</h1>
+          <h1 className="text-lg font-bold">SWOMB</h1>
         </div>
 
         {/* Profile Button */}
@@ -52,7 +52,7 @@ export const Mobilenavbar = () => {
 
       {/* Dropdown Menu */}
       {isMenuOpen && (
-        <div className="absolute rounded-lg top-16 left-2 bg-cyan-900 shadow-lg z-10 w-36 md:hidden">
+        <div className="absolute rounded-lg top-16 left-2 bg-blue-700 shadow-lg z-10 w-36 md:hidden">
           <nav className="flex flex-col gap-4 p-4">
             {MENU_ITEMS.map((item) => (
               <Link
@@ -62,7 +62,7 @@ export const Mobilenavbar = () => {
                 className="flex items-center gap-4 text-white hover:border-yellow-200 rounded-lg transition-all"
               >
                 <i className="text-lg">{item.icon}</i>
-                <span className="text-md font-medium text-yellow-500">{item.name}</span>
+                <span className="text-md font-medium">{item.name}</span>
               </Link>
             ))}
           </nav>
@@ -71,9 +71,9 @@ export const Mobilenavbar = () => {
 
       {/* Profile Dropdown */}
       {isProfileOpen && (
-        <div className="absolute rounded-lg top-16 right-2 bg-cyan-950 shadow-lg z-10 w-40 md:hidden">
+        <div className="absolute rounded-lg top-16 right-2 bg-blue-700 shadow-lg z-10 w-40 md:hidden">
           {/* Profile Section */}
-          <div className="flex items-center gap-2 p-3 border-b border-yellow-200">
+          <div className="flex items-center gap-2 p-3 border-b border-gray-300">
             <img
               src={profileImage}
               alt="Profile"
@@ -86,7 +86,7 @@ export const Mobilenavbar = () => {
           </div>
           {/* Edit Button */}
           <div
-            className="flex border-b border-yellow-200 items-center justify-center p-2 text-yellow-500 hover:bg-blue-100 cursor-pointer rounded-t-lg transition-all"
+            className="flex border-b border-gray-300 items-center justify-center p-2 text-white hover:bg-blue-100 cursor-pointer rounded-t-lg transition-all"
             onClick={() => {
               alert("open");
               setIsProfileOpen(false);
@@ -96,7 +96,7 @@ export const Mobilenavbar = () => {
           </div>
           {/* Logout Button */}
           <div
-            className="flex items-center gap-2 justify-center p-2 text-red-500 hover:bg-red-100 cursor-pointer rounded-b-lg transition-all"
+            className="flex items-center gap-2 justify-center p-2 text-yellow-500 hover:bg-red-100 cursor-pointer rounded-b-lg transition-all"
             onClick={() => {
               alert("Are you sure you want to logout?");
               setIsProfileOpen(false);
