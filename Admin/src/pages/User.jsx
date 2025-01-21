@@ -46,7 +46,7 @@ export default function User() {
   ];
   
   return (
-    <div className="mt-10 sm:mt-0 p-6  w-full space-y-6">
+    <div className=" p-6  w-full space-y-6">
       {/* Top Title with Add Button */}
       <div className="flex items-center justify-between">
         <h1 className="sm:text-3xl text-xl font-semibold text-gray-800 ">Users List</h1>

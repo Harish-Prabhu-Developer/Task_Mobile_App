@@ -21,7 +21,7 @@ export const Mobilenavbar = () => {
   return (
     <>
       {/* Top Navbar */}
-      <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-2 text-white shadow-md fixed w-full">
+      <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-2 text-white shadow-md w-full">
         {/* Menu Button */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
