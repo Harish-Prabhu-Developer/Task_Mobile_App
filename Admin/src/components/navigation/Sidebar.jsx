@@ -52,6 +52,7 @@ const Sidebar = () => {
                 className={`flex items-center gap-4 p-3 rounded-lg bg-transparent hover:bg-slate-600 transition-all duration-300 ${
                   location.pathname.replace(/\/$/, "") === `/${item.id}` ? "bg-blue-600 text-white" : "text-white"
                 }`}
+                onClick={()=>console.log("Current Path:", location.pathname)}
               >
                 <i
                   className={`text-2xl transition-transform duration-300 group-hover:scale-110`}

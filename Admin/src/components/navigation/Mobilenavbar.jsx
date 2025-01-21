@@ -4,7 +4,7 @@ import { ImMenu } from "react-icons/im";
 import { IoFolderOpenSharp, IoLogOut, IoClose } from "react-icons/io5";
 import { FaUserPlus, FaTasks } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
+import CompanyLogo from "../../assets/images/comanylogo.png"
 import profileImage from "../../assets/images/profile.png";
 
 export const Mobilenavbar = () => {
@@ -31,8 +31,10 @@ export const Mobilenavbar = () => {
         </button>
 
         {/* Title */}
-        <div className="flex">
-          <h1 className="text-lg font-bold">Mobile Navbar</h1>
+        <div className="flex gap-4">
+          <img src={CompanyLogo}
+               className="w-7 h-7 rounded-lg border-2 border-gray-300"/>
+          <h1 className="text-md font-bold">SWOMB</h1>
         </div>
 
         {/* Profile Button */}
