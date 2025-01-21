@@ -33,7 +33,7 @@ export default function User() {
       title: "Product Manager",
       email: "user.email.com",
       role: "Manager",
-      active: true,
+      active: false,
     },
     {
       id: 5,
@@ -41,7 +41,7 @@ export default function User() {
       title: "Administrator",
       email: "user.email.com",
       role: "Admin",
-      active: true,
+      active: false,
     },
   ];
   
