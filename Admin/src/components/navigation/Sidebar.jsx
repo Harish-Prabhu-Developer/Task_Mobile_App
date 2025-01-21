@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { RiDashboard3Line } from "react-icons/ri";
 import { IoFolderOpenSharp } from "react-icons/io5";
 import { FaUserPlus,FaTasks } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,13 +30,12 @@ const Sidebar = () => {
               onMouseEnter={() => setHoveredItem(item.id)}
               onMouseLeave={() => setHoveredItem(null)}
             >
-              <a
-                href={`/${item.id}`}
-                className="flex items-center px-4 py-2 hover:bg-red-700 transition-colors"
-              >
+              <Link to={`/${item.id}`} className="flex items-center px-4 py-2 hover:bg-red-700 transition-colors">
+              
                 <i className="text-2xl mr-4">{item.icon}</i>
                 {isOpen && <span className="font-light">{item.name}</span>}
-              </a>
+              
+              </Link>
               {!isOpen && hoveredItem === item.id && (
                 <span className="absolute left-16 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-sm px-2 py-1 rounded shadow-lg">
                   {item.name}

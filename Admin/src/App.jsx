@@ -10,14 +10,14 @@ import Task from "./pages/Task";
 import { Mobilenavbar } from "./components/navigation/Mobilenavbar";
 function Layout() {
   return (
-    <div className="flex h-screen">
-    <div className="hidden sm:flex h-screen ">
+    <div className="flex min-h-screen">
+    <div className="hidden sm:flex bg-fixed h-screen ">
     <Sidebar />
     <div className="flex-grow p-4 transition-all">
       <Outlet />
     </div>
     </div>
-    <div className="sm:hidden w-full">
+    <div className="sm:hidden bg-fixed w-full">
       <Mobilenavbar />
       <Outlet />
     </div>
