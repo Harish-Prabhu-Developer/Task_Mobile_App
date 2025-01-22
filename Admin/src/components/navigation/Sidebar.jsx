@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { RiDashboard3Line } from "react-icons/ri";
 import { IoFolderOpenSharp, IoLogOut } from "react-icons/io5";
 import { FaUserPlus, FaTasks } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import profileImage from "../../assets/images/profile.png";
 import companyLogo from "../../assets/images/comanylogo.png";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
 
   const MENU_ITEMS = [
     { id: "dashboard", name: "Dashboard", icon: <RiDashboard3Line /> },
@@ -18,7 +17,10 @@ const Sidebar = () => {
     { id: "tasks", name: "Tasks", icon: <FaTasks /> },
   ];
 
-  console.log("Current path:", location.pathname); // Debugging the current path
+  const linkClasses =
+    "flex items-center gap-4 p-3 rounded-lg transition-all duration-300 hover:bg-slate-600 text-white";
+  const activeLinkClasses =
+    "flex items-center gap-4 p-3 rounded-lg bg-blue-600 text-white";
 
   return (
     <div className="flex h-full">
@@ -50,36 +52,28 @@ const Sidebar = () => {
 
         {/* Navigation Items */}
         <nav className="mt-10 w-full flex flex-col gap-4 px-4">
-          {MENU_ITEMS.map((item) => {
-            const isActive = location.pathname.startsWith(`/${item.id}`);
-            console.log(
-              `Item: ${item.id}, Current Path: ${location.pathname}, Match: ${isActive}`
-            );
-
-            return (
-              <div key={item.id} className="relative group">
-                <Link
-                  to={`/${item.id}`}
-                  className={`flex items-center gap-4 p-3 rounded-lg active:bg-blue-600 bg-transparent hover:bg-slate-600 transition-all duration-300 ${
-                    isActive ? ` text-white bg-blue-600` : ` text-white`
-                  }`}
-                >
-                  <i
-                    className={`text-2xl transition-transform duration-300 group-hover:scale-110`}
-                  >
-                    {item.icon}
-                  </i>
-                  <span
-                    className={`transition-opacity duration-300 ${
-                      isOpen ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    {item.name}
-                  </span>
-                </Link>
-              </div>
-            );
-          })}
+          {MENU_ITEMS.map((item) => (
+            <NavLink
+              key={item.id}
+              to={`/${item.id}`}
+              className={({ isActive }) =>
+                isActive ? activeLinkClasses : linkClasses
+              }
+            >
+              <i
+                className={`text-2xl transition-transform duration-300 group-hover:scale-110`}
+              >
+                {item.icon}
+              </i>
+              <span
+                className={`transition-opacity duration-300 ${
+                  isOpen ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {item.name}
+              </span>
+            </NavLink>
+          ))}
         </nav>
 
         {/* Profile Section with Logout */}
