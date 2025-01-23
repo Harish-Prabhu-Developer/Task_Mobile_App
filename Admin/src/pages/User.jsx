@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import AddUser from "../components/User/AddUser";
+import { IoPersonAddSharp } from "react-icons/io5";
+import { MdModeEditOutline, MdDelete } from "react-icons/md";
 
 const User = () => {
   const [isAddUserOpen, setIsAddUserOpen] = useState(false); // Dialog visibility state
@@ -21,60 +23,41 @@ const User = () => {
   ];
 
   return (
-    <div className="p-6 w-full space-y-6">
+    <div className="p-6 w-full space-y-6 overflow-x-hidden">
+      {/* Add User Modal */}
+      {isAddUserOpen && <AddUser closeAddUserDialog={closeAddUserDialog} />}
+
       {/* Top Title with Add Button */}
       <div className="flex items-center justify-between">
         <h1 className="sm:text-3xl text-xl font-semibold text-gray-800">Users List</h1>
         <button
-          className="bg-blue-600 hover:bg-blue-900 text-white px-5 py-2 rounded-md shadow-md transition-all"
+          className="bg-blue-600 flex flex-row items-center gap-2 justify-between hover:bg-blue-900 text-white px-5 py-2 rounded-md shadow-md transition-all"
           onClick={openAddUserDialog}
         >
-          + Add User
+          <IoPersonAddSharp />
+          <p>Add User</p>
         </button>
       </div>
-
-      {/* Add User Modal */}
-      {isAddUserOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-96 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Add New User</h2>
-            <AddUser />
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="px-4 py-2 bg-gray-200 text-gray-600 rounded-md hover:bg-gray-300 transition-all"
-                onClick={closeAddUserDialog}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
-              >
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Mobile View: Stacked Cards */}
       <div className="block md:hidden space-y-4">
         {users.map((user) => (
           <div
             key={user.id}
-            className="p-4 bg-white rounded-lg shadow-md border border-gray-200"
+            className="p-4 bg-white rounded-lg shadow-md border border-gray-200 w-full"
           >
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 rounded-full text-white bg-blue-700 flex items-center justify-center">
                 {getInitials(user.fullName)}
               </div>
-              <div>
-                <h2 className="text-lg font-medium text-gray-800">{user.fullName}</h2>
-                <p className="text-sm text-gray-600">{user.title}</p>
+              <div className="flex-1">
+                <h2 className="text-lg font-medium text-gray-800 break-words">{user.fullName}</h2>
+                <p className="text-sm text-gray-600 break-words">{user.title}</p>
               </div>
             </div>
-            <div className="mt-3">
-              <p className="text-sm text-gray-600">Email: {user.email}</p>
-              <p className="text-sm text-gray-600">Role: {user.role}</p>
+            <div className="mt-3 space-y-1">
+              <p className="text-sm text-gray-600 break-words">Email: {user.email}</p>
+              <p className="text-sm text-gray-600 break-words">Role: {user.role}</p>
               <p
                 className={`text-sm font-medium mt-2 ${
                   user.active ? "text-green-600" : "text-red-600"
@@ -126,10 +109,16 @@ const User = () => {
                 </td>
                 <td className="px-6 py-4 text-center space-x-2">
                   <button className="px-4 py-2 text-blue-600 rounded-md hover:bg-blue-700 hover:text-white transition-all">
-                    Edit
+                    <div className="flex gap-2 flex-row justify-between items-center">
+                      <MdModeEditOutline />
+                      <p>Edit</p>
+                    </div>
                   </button>
                   <button className="px-4 py-2 text-red-500 rounded-md hover:bg-red-600 hover:text-white transition-all">
-                    Delete
+                    <div className="flex gap-2 flex-row justify-between items-center">
+                      <MdDelete />
+                      <p>Delete</p>
+                    </div>
                   </button>
                 </td>
               </tr>
