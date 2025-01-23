@@ -26,7 +26,7 @@ function Layout() {
   );
 }
 
-export default function App() {
+const App=()=> {
   return (
         <>
         <Routes>
@@ -51,4 +51,6 @@ export default function App() {
         </Routes>
       </>
     );
-}
+};
+
+export default App;

@@ -1,7 +1,9 @@
 import React from 'react'
 
-export default function Task() {
+const Task = () => {
   return (
-    <div  className='text-3xl m-2'>Task</div>
+    <div className='text-3xl m-2'>Task</div>
   )
 }
+
+export default Task

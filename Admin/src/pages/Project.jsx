@@ -1,7 +1,9 @@
 import React from 'react'
 
-export default function Project() {
+const Project = () => {
   return (
-    <div  className='text-3xl m-2'>Project</div>
+    <div className='text-3xl m-2'>Project</div>
   )
 }
+
+export default Project
