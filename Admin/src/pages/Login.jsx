@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import companyLogo from "../assets/images/companylogo.png"; // Replace with actual path
 import artLogin from "../assets/images/Loginart.png"; // Replace with actual path
-import CustomLoading from "../components/Loading/CustomLoading";
+
 import LoginForm from "../components/auth/LoginForm";
 import ForgetpassForm from "../components/auth/ForgetpassForm";
+import CustomLoading from "../components/CustomLoading/CustomLoading";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -12,7 +13,7 @@ const Login = () => {
   return (
     <>
       {loading ? (
-        <CustomLoading />
+        <CustomLoading/>
       ) : (
         <div className="flex items-center justify-center bg-gradient-to-tr from-yellow-100 via-yellow-200 to-yellow-300 w-full h-screen">
           <div className="flex flex-col md:flex-row justify-between w-11/12 sm:w-9/12 bg-white rounded-3xl shadow-xl overflow-hidden md:overflow-visible">
