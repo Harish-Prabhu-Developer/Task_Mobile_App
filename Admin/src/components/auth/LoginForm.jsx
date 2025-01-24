@@ -10,7 +10,8 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
   const [passwordError, setPasswordError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const SECRET_KEY = 'remembermeSECRETKEYSWOMBTECHNOLOGIES'; // Replace with a strong secret key
+  const SECRET_KEY = import.meta.env.VITE_REACT_APP_REMEMBER_SECRET;
+   // Replace with a strong secret key
 
   // Load saved credentials on component mount
   useEffect(() => {
@@ -54,6 +55,8 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log("Sercert",SECRET_KEY);
+    
     if (validateForm()) {
       setLoading(true);
 
