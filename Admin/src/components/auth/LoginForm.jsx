@@ -11,7 +11,7 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const SECRET_KEY = import.meta.env.VITE_REACT_APP_REMEMBER_SECRET;
-   // Replace with a strong secret key
+  // Replace with a strong secret key
 
   // Load saved credentials on component mount
   useEffect(() => {
@@ -55,8 +55,7 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Sercert",SECRET_KEY);
-    
+
     if (validateForm()) {
       setLoading(true);
 
@@ -91,7 +90,7 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
 
   return (
     <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-10 py-14 overflow-y-auto scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-yellow-200">
-      <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-8 text-center">Welcome Back!</h2>
+      <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-3 text-center">Welcome Back!</h2>
       <p className="text-sm md:text-md text-gray-600 mb-6 text-center leading-relaxed">
         Login to your account and take the next step in your journey
       </p>
@@ -125,7 +124,7 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
           {passwordError && <p className="text-red-600 p-2 font-medium text-xs sm:text-sm">{passwordError}</p>}
         </div>
         <div className="flex items-center justify-between text-sm md:text-md">
-          <div>
+          <div className="flex flex-row items-center justify-center">
             <input
               type="checkbox"
               id="remember"
@@ -133,14 +132,13 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             />
-            <label htmlFor="remember" className="text-gray-600">
+            <label htmlFor="remember" className="text-gray-600 mb-1">
               Remember me
             </label>
           </div>
           <div
             className="text-yellow-600 hover:underline hover:cursor-pointer font-semibold"
-            onClick={onForgetPassword}
-          >
+            onClick={onForgetPassword} >
             Forgot Password?
           </div>
         </div>

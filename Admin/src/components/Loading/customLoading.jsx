@@ -1,14 +1,9 @@
-import React from 'react';
+import React from "react";
 
 const CustomLoading = () => {
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 w-full h-full overflow-hidden" 
-    >
-      <div 
-        className='text-center text-white'
-      > Please Wait!</div>
-    
+    <div className="fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-50">
+      <div className="text-center text-white font-bold p-4 "> Please Wait!</div>
     </div>
   );
 };

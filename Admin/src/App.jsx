@@ -18,7 +18,9 @@ function Layout() {
           <Outlet />
       </div>
       <div className="sm:hidden bg-fixed w-screen h-screen">
-        <Mobilenavbar />
+        <div className="mb-12">
+          <Mobilenavbar />
+        </div>
         <Outlet />
       </div>
 

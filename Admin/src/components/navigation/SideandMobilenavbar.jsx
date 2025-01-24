@@ -107,7 +107,7 @@ const Mobilenavbar = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-2 text-white shadow-md w-full">
+      <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-2 text-white shadow-md w-full fixed top-0">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="text-2xl block sm:hidden focus:outline-none"
@@ -137,7 +137,7 @@ const Mobilenavbar = () => {
       </div>
 
       {isMenuOpen && (
-        <div className="absolute rounded-lg top-16 left-2 bg-blue-700 shadow-lg z-10 w-36 md:hidden">
+        <div className="fixed rounded-lg top-16 left-2 bg-blue-700 shadow-lg z-10 w-36 md:hidden">
           <nav className="flex flex-col gap-4 p-4">
             {MENU_ITEMS.map((item) => (
               <NavLink
@@ -157,7 +157,7 @@ const Mobilenavbar = () => {
       )}
 
       {isProfileOpen && (
-        <div className="absolute rounded-lg top-16 right-2 bg-blue-700 shadow-lg z-10 w-40 md:hidden">
+        <div className="fixed rounded-lg top-16 right-2 bg-blue-700 shadow-lg z-10 w-40 md:hidden">
           <div className="flex items-center gap-2 p-3 border-b border-gray-300">
             <img
               src={profileImage}

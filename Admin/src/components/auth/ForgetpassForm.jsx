@@ -11,7 +11,7 @@ const ForgetpassForm = ({ onBack }) => {
           <IoArrowBackOutline size={24} />
         </button>
       </div>
-      <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-8 text-center">Reset Password</h2>
+      <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-2 text-center">Reset Password</h2>
       <p className="text-sm md:text-md text-gray-600 mb-6 text-center leading-relaxed">
         Enter your email address to reset your password
       </p>
