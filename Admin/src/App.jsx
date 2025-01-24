@@ -30,29 +30,27 @@ function Layout() {
 
 const App=()=> {
   return (
-        <>
-        <Routes>
-        <Route path="/login" element={<Login />} />
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<Login />} />
 
-          <Route element={<Layout />}>
-            <Route
-              index
-              path="/"
-              element={<Navigate to="/Login" replace />}
-            />            
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/projects" element={<Project />} />
-            <Route path="/users" element={<User />} />
-            <Route path="/tasks" element={<Task />}>
-              <Route path="todos" element={<TodosTasks />} />
-              <Route path="in-progress" element={<InProgressTasks />} />
-              <Route path="completed" element={<CompletedTasks />} />
-            </Route>
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </>
-    );
+      {/* Protected Routes */}
+      <Route element={<Layout />}>
+        <Route index element={<Navigate to="/login" replace />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/projects" element={<Project />} />
+        <Route path="/users" element={<User />} />
+        <Route path="/tasks" element={<Task />}>
+          <Route path="todos" element={<TodosTasks />} />
+          <Route path="in-progress" element={<InProgressTasks />} />
+          <Route path="completed" element={<CompletedTasks />} />
+        </Route>
+      </Route>
+
+      {/* Catch-All Not Found */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 };
 
 export default App;
