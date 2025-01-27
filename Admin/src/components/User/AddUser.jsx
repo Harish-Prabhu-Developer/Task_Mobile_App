@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 
-const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
+const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit, onOpen }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     designation: "",
@@ -22,6 +22,22 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
     }
   }, [userToEdit]);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        closeAddUserDialog();
+      }
+    };
+
+    // Add the event listener
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeAddUserDialog]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -40,8 +56,8 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
 
   return (
     <>
-      {onOpen &&(
-          <div className="fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-50">
+      {onOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg md:w-1/3 w-[80%] p-4">
             <div className="flex flex-row items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-gray-800">
@@ -56,7 +72,9 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
             </div>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">Full Name</label>
+                <label className="block text-gray-900 font-semibold mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   name="fullName"
@@ -67,7 +85,9 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">Designation</label>
+                <label className="block text-gray-900 font-semibold mb-1">
+                  Designation
+                </label>
                 <input
                   type="text"
                   name="designation"
@@ -78,7 +98,9 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">Email</label>
+                <label className="block text-gray-900 font-semibold mb-1">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -89,7 +111,9 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">Role</label>
+                <label className="block text-gray-900 font-semibold mb-1">
+                  Role
+                </label>
                 <input
                   type="text"
                   name="role"
@@ -100,7 +124,9 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit,onOpen}) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">Status</label>
+                <label className="block text-gray-900 font-semibold mb-1">
+                  Status
+                </label>
                 <select
                   name="status"
                   value={formData.status}

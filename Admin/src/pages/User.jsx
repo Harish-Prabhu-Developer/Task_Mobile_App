@@ -1,4 +1,7 @@
+//User.jsx
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser, editUser, deleteUser } from "../redux/slice/auth/userSlice";
 import AddUser from "../components/User/AddUser";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { MdModeEditOutline, MdDelete } from "react-icons/md";
@@ -6,19 +9,15 @@ import CustomDeleteAlert from "../components/alert/CustomDeleteAlert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const User = () => {
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
-  const [users, setUsers] = useState([
-    { id: 1, fullName: "New User", designation: "Designer", email: "user@email.com", role: "Developer", active: true },
-    { id: 2, fullName: "Emily Wilson", designation: "Data Analyst", email: "user@email.com", role: "Analyst", active: true },
-    { id: 3, fullName: "Alex Johnson", designation: "UX Designer", email: "user@email.com", role: "Designer", active: true },
-    { id: 4, fullName: "Jane Smith", designation: "Product Manager", email: "user@email.com", role: "Manager", active: false },
-    { id: 5, fullName: "Codewave Asante", designation: "Administrator", email: "user@email.com", role: "Admin", active: false },
-  ]);
+  const [userToDelete, setUserToDelete] = useState(null);
 
+  //Redux Hooks 
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.user.users);
 
   const openAddUserDialog = (user = null) => {
     setUserToEdit(user);
@@ -31,54 +30,55 @@ const User = () => {
   };
 
   const handleDelete = (id) => {
+    setUserToDelete(id);
     setOpenDelete(true);
   };
+
   const handleSubmit = (formData) => {
     if (userToEdit) {
       // Update existing user
-      setUsers((prev) =>
-        prev.map((user) =>
-          user.id === userToEdit.id ? { ...user, ...formData } : user
-        )
-      );
+      dispatch(editUser({ id: userToEdit.id, data: formData }));
     } else {
       // Add new user
-      setUsers((prev) => [
-        ...prev,
-        { id: prev.length + 1, ...formData, active: true },
-      ]);
+      dispatch(addUser(formData));
     }
     closeAddUserDialog();
   };
-  const showSuccessMessage = () => {
-    setOpenDelete(false); // Close the dialog
-    toast.success("Deleted successful!", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+
+  const confirmDelete = () => {
+    if (userToDelete !== null) {
+      dispatch(deleteUser(userToDelete));
+      toast.success("Deleted successfully!", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+    setOpenDelete(false);
+    setUserToDelete(null);
   };
+
   return (
     <>
       <CustomDeleteAlert
         onOpen={openDelete}
         onCancel={() => setOpenDelete(false)}
-        onDelete={showSuccessMessage}
+        onDelete={confirmDelete}
         title={"Delete User"}
-        message={`Are you sure you want to delete this ?`}
+        message={`Are you sure you want to delete this user?`}
       />
-        {/* Add/Edit User Modal */}
-        <AddUser
-          closeAddUserDialog={closeAddUserDialog}
-          userToEdit={userToEdit}
-          onOpen={isAddUserOpen}
-          onSubmit={handleSubmit}
-        />      
+      {/* Add/Edit User Modal */}
+      <AddUser
+        closeAddUserDialog={closeAddUserDialog}
+        userToEdit={userToEdit}
+        onOpen={isAddUserOpen}
+        onSubmit={handleSubmit}
+      />
       <div className="p-6 w-full space-y-6 overflow-x-hidden">
         {/* Top Title with Add Button */}
         <div className="flex items-center justify-between">
@@ -149,7 +149,7 @@ const User = () => {
             </div>
           ))}
         </div>
-        <ToastContainer/>
+        <ToastContainer />
         {/* Desktop View: Table */}
         <div className="hidden md:block bg-white rounded-lg shadow-lg overflow-hidden">
           <table className="min-w-full border-collapse">
@@ -229,7 +229,6 @@ const User = () => {
           </table>
         </div>
       </div>
-      
     </>
   );
 };

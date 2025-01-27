@@ -1,6 +1,5 @@
-//userModel.js
 import mongoose from "mongoose";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -20,9 +19,23 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["User","Admin","Manager","Junior","Senior"],
+      enum: ["User", "Admin", "Manager", "Junior", "Senior"],
       required: true,
       default: "User",
+    },
+    subRole: {
+      type: String,
+      enum: ["soe", "designer", "developer", "tester"],
+      default: function () {
+        return this.role === "Junior" || this.role === "Senior" ? "tester" : null;
+      },
+      validate: {
+        validator: function (value) {
+          const needsSubRole = this.role === "Junior" || this.role === "Senior";
+          return (needsSubRole && value) || (!needsSubRole && !value);
+        },
+        message: "SubRole is required for 'Junior' and 'Senior' roles, and should not be set for other roles.",
+      },
     },
     password: {
       type: String,
@@ -34,25 +47,38 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Phone number is required"],
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
-    address: {
-      type: String,
-      required: [true, "Address is required"],
+    active: {
+      type: Boolean,
+      default: true,
     },
-
-
+    tfa: {
+      type: Boolean,
+      default: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    this.password = await bcryptjs.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
 
 UserSchema.methods.isValidPassword = async function (password) {
-  return bcryptjs.compare(password, this.password);
+  return bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.softDelete = async function () {
+  this.deletedAt = new Date();
+  await this.save();
 };
 
 export default mongoose.model("User", UserSchema);
