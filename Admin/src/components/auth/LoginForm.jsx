@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js'; // Import CryptoJS
-
-const LoginForm = ({ setLoading, onForgetPassword }) => {
+const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,11 +55,8 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    
     if (validateForm()) {
-      setLoading(true);
-
-      // Simulate a login process
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Encrypt and save credentials in localStorage based on "Remember me"
       if (rememberMe) {
@@ -74,8 +70,8 @@ const LoginForm = ({ setLoading, onForgetPassword }) => {
         localStorage.removeItem('rememberedPassword');
       }
 
-      navigate('/dashboard');
-      setLoading(false);
+    // Call function to show OTP form
+        onLoginSuccess();
     }
   };
 

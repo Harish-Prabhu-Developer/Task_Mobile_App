@@ -33,6 +33,7 @@ const App=()=> {
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
+      
 
       {/* Protected Routes */}
       <Route element={<Layout />}>
