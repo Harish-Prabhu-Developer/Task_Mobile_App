@@ -1,11 +1,14 @@
+//SideandMobilenavbar.jsx
 import React, { useState } from "react";
 import { RiDashboard3Line } from "react-icons/ri";
 import { FaUserPlus, FaTasks } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate} from "react-router-dom";
 import { ImMenu } from "react-icons/im";
 import { IoFolderOpenSharp, IoLogOut, IoClose } from "react-icons/io5";
 import profileImage from "../../assets/images/profile.png";
 import companyLogo from "../../assets/images/companylogo.png";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/slice/auth/authSlice";
 
 const MENU_ITEMS = [
   { id: "dashboard", name: "Dashboard", icon: <RiDashboard3Line /> },
@@ -21,12 +24,20 @@ const MENU_ITEMS = [
 ];
 
 const Sidebar = () => {
+  const navigate = useNavigate(); 
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const linkClasses =
     "flex items-center gap-4 p-3 rounded-lg transition-all duration-300 hover:bg-slate-600 text-white";
   const activeLinkClasses =
     "flex items-center gap-4 p-3 rounded-lg bg-blue-600 text-white";
 
+    const handleLogout = () => {
+      if (window.confirm("Are you sure you want to logout?")) {
+        dispatch(logout());
+        navigate("/login", { replace: true }); // Ensure smooth redirect
+      }
+    };
   return (
     <div className="flex h-full">
       <div
@@ -88,7 +99,7 @@ const Sidebar = () => {
             </div>
             <button
               className="p-4 bg-transparent rounded-lg hover:bg-yellow-200"
-              onClick={() => alert("Are you sure you want to log out?")}
+              onClick={handleLogout}
             >
               <IoLogOut size={24} />
             </button>
@@ -100,11 +111,19 @@ const Sidebar = () => {
 };
 
 const Mobilenavbar = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const linkClasses = "flex items-center gap-4 text-white rounded-md transition-all";
   const activeLinkClasses = "flex items-center gap-4 text-yellow-300 bg-blue-800 rounded-md transition-all";
-
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      dispatch(logout());
+      navigate("/login", { replace: true });
+      setIsProfileOpen(false);
+    }
+  };
   return (
     <>
       <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-2 text-white shadow-md w-full fixed top-0">
@@ -182,10 +201,7 @@ const Mobilenavbar = () => {
           {/* Logout Button */}
           <div
             className="flex items-center gap-2 justify-center p-2 text-yellow-500 hover:bg-red-100 cursor-pointer rounded-b-lg transition-all"
-            onClick={() => {
-              alert("Are you sure you want to logout?");
-              setIsProfileOpen(false);
-            }}
+            onClick={handleLogout}
           >
             <IoLogOut size={24} />
             <span className="text-md font-medium">Logout</span>

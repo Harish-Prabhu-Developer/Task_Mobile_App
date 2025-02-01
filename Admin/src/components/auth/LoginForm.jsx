@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js'; // Import CryptoJS
-const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../../redux/slice/auth/authSlice';
+import { setemail } from '../../redux/slice/auth/emailSlice';
+
+const LoginForm = ({ onForgetPassword, onLoginSuccess }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Redux state
+  const OnLoginStatus = useSelector((state) => state.auth.OnStatus);
+  const loading = useSelector((state) => state.auth.loading);
+  const error = useSelector((state) => state.auth.error);
+
+  // Local state for form inputs
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -10,7 +22,6 @@ const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const SECRET_KEY = import.meta.env.VITE_REACT_APP_REMEMBER_SECRET;
-  // Replace with a strong secret key
 
   // Load saved credentials on component mount
   useEffect(() => {
@@ -18,7 +29,6 @@ const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
     const encryptedPassword = localStorage.getItem('rememberedPassword');
 
     if (encryptedEmail && encryptedPassword) {
-      // Decrypt and set the values
       const decryptedEmail = CryptoJS.AES.decrypt(encryptedEmail, SECRET_KEY).toString(CryptoJS.enc.Utf8);
       const decryptedPassword = CryptoJS.AES.decrypt(encryptedPassword, SECRET_KEY).toString(CryptoJS.enc.Utf8);
 
@@ -28,7 +38,32 @@ const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
     }
   }, []);
 
-  const validateForm = () => {
+  //Listen for changes in OnLoginStatus
+  useEffect(() => {
+    if (OnLoginStatus === "OTP sent to the email") {
+      console.log("OTP sent to the email, showing OTP form...");
+      dispatch(setemail(email))
+      onLoginSuccess();  // Call function to show OTP form
+    } else if (OnLoginStatus === "Login success") {
+      console.log("Login success, navigating to dashboard...");
+      navigate('/dashboard'); // Redirect to dashboard
+    }
+  }, [OnLoginStatus, navigate, onLoginSuccess]);
+
+  // Validation functions
+  const validateEmail = (email) => {
+    const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return EMAIL_PATTERN.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
+
+  // Handle login submission
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     let isValid = true;
     setEmailError('');
     setPasswordError('');
@@ -37,7 +72,7 @@ const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
       setEmailError('Email is required');
       isValid = false;
     } else if (!validateEmail(email)) {
-      setEmailError('Invalid email');
+      setEmailError('Invalid email format');
       isValid = false;
     }
 
@@ -49,43 +84,30 @@ const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
       isValid = false;
     }
 
-    return isValid;
-  };
+    if (!isValid) return;
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+    // Encrypt and save credentials in localStorage based on "Remember me"
+    if (rememberMe) {
+      const encryptedEmail = CryptoJS.AES.encrypt(email, SECRET_KEY).toString();
+      const encryptedPassword = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
 
-    
-    if (validateForm()) {
+      localStorage.setItem('rememberedEmail', encryptedEmail);
+      localStorage.setItem('rememberedPassword', encryptedPassword);
+    } else {
+      localStorage.removeItem('rememberedEmail');
+      localStorage.removeItem('rememberedPassword');
+    }
 
-      // Encrypt and save credentials in localStorage based on "Remember me"
-      if (rememberMe) {
-        const encryptedEmail = CryptoJS.AES.encrypt(email, SECRET_KEY).toString();
-        const encryptedPassword = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
-
-        localStorage.setItem('rememberedEmail', encryptedEmail);
-        localStorage.setItem('rememberedPassword', encryptedPassword);
-      } else {
-        localStorage.removeItem('rememberedEmail');
-        localStorage.removeItem('rememberedPassword');
-      }
-
-    // Call function to show OTP form
-        onLoginSuccess();
+    const credentials = { email, password };
+    dispatch(loginUser(credentials));  // Dispatch action 🚀
+    if (OnLoginStatus === "Login success") {
+      console.log("Login success, navigating to dashboard...");
+      navigate('/dashboard');
     }
   };
 
-  const validateEmail = (email) => {
-    const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return EMAIL_PATTERN.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 8;
-  };
-
   return (
-    <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-10 py-14 overflow-y-auto scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-yellow-200">
+    <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-10 py-14 overflow-y-auto">
       <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-3 text-center">Welcome Back!</h2>
       <p className="text-sm md:text-md text-gray-600 mb-6 text-center leading-relaxed">
         Login to your account and take the next step in your journey
@@ -134,16 +156,19 @@ const LoginForm = ({  onForgetPassword,onLoginSuccess }) => {
           </div>
           <div
             className="text-yellow-600 hover:underline hover:cursor-pointer font-semibold"
-            onClick={onForgetPassword} >
+            onClick={onForgetPassword}
+          >
             Forgot Password?
           </div>
         </div>
         <button
           type="submit"
           className="w-full bg-yellow-500 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-yellow-600 transition-transform transform hover:scale-105 duration-300"
+          
         >
           Login
         </button>
+        {error && <p className="text-red-600 text-center font-medium mt-2">{error}</p>}
       </form>
     </div>
   );

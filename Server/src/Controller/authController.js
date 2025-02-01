@@ -39,7 +39,7 @@ export const login = async (req, res) => {
         }
 
         if (existingUser.tfa) {
-            const otp = Math.random().toString(36).slice(6); // Generates a random 6-digit character string
+            const otp = Math.random().toString(36).slice(-6);
             await OTP.create({ email, otp });
             sendOTP(email, otp,existingUser.name);
             return res.status(200).json({ status: "success", msg: "OTP sent to the email"});
@@ -86,7 +86,7 @@ export const verifyOTP = async (req, res) => {
         return res.status(200).json({ status: "success", msg: "Login successfully", token });
     } catch (error) {
         console.error("Error during OTP verification:", error.message);
-        res.status(500).json({ status: "fail", msg: "Internal server error" });
+        res.status(500).json({ status: "fail", msg: "Internal server error",error:error.message });
     }
 };
 

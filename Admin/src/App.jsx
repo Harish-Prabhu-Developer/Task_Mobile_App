@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
-import NotFound from "./pages/NotFound";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import User from "./pages/User";
 import Task from "./pages/Task";
@@ -10,6 +9,13 @@ import { TodosTasks } from "./components/Tasks/TodosTasks";
 import { InProgressTasks } from "./components/Tasks/InProgressTasks";
 import { CompletedTasks } from "./components/Tasks/CompletedTasks";
 import Login from "./pages/Login";
+
+// Protected Route Component
+const ProtectedRoute = () => {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
 function Layout() {
   return (
     <div className="flex min-h-screen">
@@ -28,7 +34,13 @@ function Layout() {
   );
 }
 
+
+
+
 const App=()=> {
+
+
+  
   return (
     <Routes>
       {/* Public Routes */}
@@ -49,7 +61,7 @@ const App=()=> {
       </Route>
 
       {/* Catch-All Not Found */}
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
