@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/slice/auth/authSlice";
 import CryptoJS from 'crypto-js';
+import { CONFIG } from "../Config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,21 +23,22 @@ const Login = () => {
   const [showForgetPass, setShowForgetPass] = useState(false);
   const [showOTPContainer,SetShowOTPContainer]=useState(false);
 
-  const SECRET_KEY = import.meta.env.VITE_REACT_APP_REMEMBER_SECRET;
+
 
   useEffect(() => {
     const encryptedEmail = localStorage.getItem('rememberedEmail');
     const encryptedPassword = localStorage.getItem('rememberedPassword');
 
     if (encryptedEmail && encryptedPassword) {
-      setEmail(CryptoJS.AES.decrypt(encryptedEmail, SECRET_KEY).toString(CryptoJS.enc.Utf8));
-      setPassword(CryptoJS.AES.decrypt(encryptedPassword, SECRET_KEY).toString(CryptoJS.enc.Utf8));
+      setEmail(CryptoJS.AES.decrypt(encryptedEmail, CONFIG.SECRET_KEY).toString(CryptoJS.enc.Utf8));
+      setPassword(CryptoJS.AES.decrypt(encryptedPassword, CONFIG.SECRET_KEY).toString(CryptoJS.enc.Utf8));
       setRememberMe(true);
     }
   }, []);
 
     //Listen for changes in OnLoginStatus
     useEffect(() => {
+      console.log("OnLoginStatus:", OnLoginStatus); // Debugging line
       if (OnLoginStatus === "OTP sent to the email") {
         console.log("OTP sent to the email, showing OTP form...");
         SetShowOTPContainer(true);
@@ -66,8 +68,8 @@ const Login = () => {
     }
 
     if (rememberMe) {
-      localStorage.setItem('rememberedEmail', CryptoJS.AES.encrypt(email, SECRET_KEY).toString());
-      localStorage.setItem('rememberedPassword', CryptoJS.AES.encrypt(password, SECRET_KEY).toString());
+      localStorage.setItem('rememberedEmail', CryptoJS.AES.encrypt(email, CONFIG.SECRET_KEY).toString());
+      localStorage.setItem('rememberedPassword', CryptoJS.AES.encrypt(password, CONFIG.SECRET_KEY).toString());
     } else {
       localStorage.removeItem('rememberedEmail');
       localStorage.removeItem('rememberedPassword');
@@ -75,10 +77,12 @@ const Login = () => {
 
     const credentials = { email, password };
     try {
-      await dispatch(loginUser(credentials));
+      const response = await dispatch(loginUser(credentials)).unwrap();
+      console.log("Login response:", response);  // Debug to see API response
     } catch (error) {
-      console.error("Await Login failed:", error.message);
+      console.error("Login failed:", error.message);
     }
+    
   };
 
   return (

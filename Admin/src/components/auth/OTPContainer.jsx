@@ -4,6 +4,7 @@ import axios from "axios";
 import OTPInput from "./OTPInput";
 import { useDispatch } from "react-redux";
 import { OTPVerify } from "../../redux/slice/auth/authSlice";
+import { CONFIG } from "../../Config";
 const OTPContainer = ({ email, onOTPVerified}) => {
   const navigate = useNavigate();
   const [otp, setOTP] = useState('');
@@ -24,7 +25,7 @@ const OTPContainer = ({ email, onOTPVerified}) => {
 
 const handleVerifyApi = async (email,otp) => {
     try {
-        const URL=`http://localhost:3000/taskapp/auth/checksecret/${email}/${otp}`;
+        const URL=`${CONFIG.BASE_URL}/taskapp/auth/checksecret/${email}/${otp}`;
         console.log("URL",URL);
         const res =await axios.get(URL);
         console.log("OTP response",res.data);

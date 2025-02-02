@@ -3,11 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { IoArrowBackOutline } from "react-icons/io5";
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
+import { CONFIG } from '../../Config';
 
 const ForgetpassForm = ({ onBack }) => {
 
 
-   const SECRET_KEY = import.meta.env.VITE_REACT_APP_REMEMBER_SECRET;
+   
    const [email, setEmail] = useState('');
    const [emailError, setEmailError] = useState('');
    const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -18,7 +19,7 @@ const ForgetpassForm = ({ onBack }) => {
        const encryptedPassword = localStorage.getItem('rememberedPassword');
    
        if (encryptedEmail && encryptedPassword) {
-         setEmail(CryptoJS.AES.decrypt(encryptedEmail, SECRET_KEY).toString(CryptoJS.enc.Utf8));
+         setEmail(CryptoJS.AES.decrypt(encryptedEmail, CONFIG.SECRET_KEY).toString(CryptoJS.enc.Utf8));
        }
      }, []);
    
@@ -30,7 +31,7 @@ const ForgetpassForm = ({ onBack }) => {
         return;
       }
     
-      const URL =`http://localhost:3000/taskapp/auth/resetpassword/${email}`
+      const URL =`${CONFIG.BASE_URL}/taskapp/auth/resetpassword/${email}`
       const res =await axios.get(URL);
       console.log("Forget Response:",res.data);
       if (res.data.status==="success" && res.data.msg=== "Password reset successfully") {

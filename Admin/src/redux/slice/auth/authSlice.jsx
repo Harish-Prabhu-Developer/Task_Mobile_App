@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { CONFIG } from "../../../Config";
 
 
 export const loginUser =createAsyncThunk(
@@ -8,7 +9,7 @@ export const loginUser =createAsyncThunk(
     async (credentials,{rejectWithValue}) => {
         try {
             console.log("Login Request Data:", credentials);
-            const res =await axios.post("http://localhost:3000/taskapp/auth/login",credentials );
+            const res =await axios.post(`${CONFIG.BASE_URL}/taskapp/auth/login`,credentials );
             console.log("Login Response:", res.data); 
             return res.data;
 
@@ -73,6 +74,7 @@ const authSlice = createSlice({
         state.OnStatus = action.payload.msg;
       }else if (action.payload.msg === "Login success") {
         console.log("Login success");
+        state.OnStatus = action.payload.msg;
         try {
           state.user = jwtDecode(action.payload.token);
           state.role = state.user.role;
@@ -80,7 +82,7 @@ const authSlice = createSlice({
           localStorage.setItem("token", action.payload.token);
           na
         } catch (error) {
-          console.error("Invalid token:", error.message);
+          console.warn("Invalid token:", error);
           state.error = "Invalid token received";
         }
 
