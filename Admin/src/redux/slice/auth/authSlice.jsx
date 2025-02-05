@@ -8,7 +8,6 @@ export const loginUser =createAsyncThunk(
     "auth/loginUser",
     async (credentials,{rejectWithValue}) => {
         try {
-            console.log("Login Request Data:", credentials);
             const res =await axios.post(`${CONFIG.BASE_URL}/taskapp/auth/login`,credentials );
             console.log("Login Response:", res.data); 
             return res.data;
@@ -29,7 +28,6 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    role: null,
     OnStatus: '',
     loading: false,
     error: null,
@@ -38,9 +36,7 @@ const authSlice = createSlice({
   reducers: {
     OTPVerify(state, action){
       try {
-        console.log("Func OTPVerify state:",action.payload.token);
         state.user = jwtDecode(action.payload.token);
-        state.role = state.user.role;
         localStorage.setItem("isLoggedIn",JSON.stringify(true));
         localStorage.setItem("token", action.payload.token);
       } catch (error) {
@@ -51,7 +47,6 @@ const authSlice = createSlice({
 
     logout(state) {
       state.user = null;
-      state.role = null;
       state.OnStatus = "";
       state.loading = false;
       state.error = null;
@@ -77,7 +72,6 @@ const authSlice = createSlice({
         state.OnStatus = action.payload.msg;
         try {
           state.user = jwtDecode(action.payload.token);
-          state.role = state.user.role;
           localStorage.setItem("isLoggedIn",JSON.stringify(true));
           localStorage.setItem("token", action.payload.token);
           na

@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import User from "./pages/User";
 import Task from "./pages/Task";
 import { Mobilenavbar, Sidebar } from "./components/navigation/SideandMobilenavbar";
@@ -9,58 +9,62 @@ import { TodosTasks } from "./components/Tasks/TodosTasks";
 import { InProgressTasks } from "./components/Tasks/InProgressTasks";
 import { CompletedTasks } from "./components/Tasks/CompletedTasks";
 import Login from "./pages/Login";
-
-// Protected Route Component
+import { CONFIG,IMAGES } from "./Config";
+// ✅ Protected Route Component
 const ProtectedRoute = () => {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+  const isLoggedIn = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  return isLoggedIn && token ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-function Layout() {
+// ✅ Layout Component
+const Layout = () => {
   return (
     <div className="flex min-h-screen">
-      <div className="hidden sm:flex bg-fixed w-screen h-screen ">
-        <Sidebar/>
+      {/* Sidebar for Large Screens */}
+      <div className="hidden sm:flex w-screen h-screen">
+        <Sidebar />
+        <div className="flex-1 p-4">
           <Outlet />
+        </div>
       </div>
-      <div className="sm:hidden bg-fixed w-screen h-screen">
+
+      {/* Mobile Navbar for Small Screens */}
+      <div className="sm:hidden w-screen h-screen">
         <div className="mb-12">
           <Mobilenavbar />
         </div>
         <Outlet />
       </div>
-
     </div>
   );
-}
+};
 
-
-
-
-const App=()=> {
-
-
-  
+// ✅ Main App Component
+const App = () => {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Public Route - Login */}
       <Route path="/login" element={<Login />} />
-      
 
-      {/* Protected Routes */}
-      <Route element={<Layout />}>
-        <Route index element={<Navigate to="/login" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/projects" element={<Project />} />
-        <Route path="/users" element={<User />} />
-        <Route path="/tasks" element={<Task />}>
-          <Route path="todos" element={<TodosTasks />} />
-          <Route path="in-progress" element={<InProgressTasks />} />
-          <Route path="completed" element={<CompletedTasks />} />
+      {/* Protected Routes - Wrapped inside `ProtectedRoute` */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/projects" element={<Project />} />
+          <Route path="/users" element={<User />} />
+          <Route path="/tasks" element={<Task />}>
+            <Route path="todos" element={<TodosTasks />} />
+            <Route path="in-progress" element={<InProgressTasks />} />
+            <Route path="completed" element={<CompletedTasks />} />
+          </Route>
         </Route>
       </Route>
 
-      {/* Catch-All Not Found */}
+      {/* Default Route (Redirect to Dashboard if Authenticated, Else Login) */}
+      <Route index element={<Navigate to="/dashboard" replace />} />
+      
+      {/* Catch-All Not Found - Redirect to Login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

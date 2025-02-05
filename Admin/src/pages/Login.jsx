@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import LoginCompanyFrame from "../components/auth/LoginCompanyFrame";
 import ForgetpassForm from "../components/auth/ForgetpassForm";
 import OTPContainer from "../components/auth/OTPContainer";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/slice/auth/authSlice";
 import CryptoJS from 'crypto-js';
-import { CONFIG } from "../Config";
+import { CONFIG, IMAGES } from "../Config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -90,7 +89,17 @@ const Login = () => {
        {!showOTPContainer ? (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-tr from-yellow-100 via-yellow-200 to-yellow-300 px-4">
         <div className="bg-white rounded-3xl flex flex-col md:flex-row shadow-xl items-center justify-center md:w-[80%] overflow-hidden">
-          <LoginCompanyFrame />
+              <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-bl from-yellow-500 to-yellow-400 p-10 md:p-12 rounded-3xl w-full md:w-1/2 text-white">
+                <div className="flex flex-row items-center gap-4 mb-6">
+                  <img src={IMAGES.companyLogo} alt="Company Logo" className="rounded-lg w-12 h-12 shadow-md" />
+                  <h3 className="text-2xl md:text-3xl font-extrabold tracking-wide">SWOMB Technologies</h3>
+                </div>
+                <img src={IMAGES.artLogin} alt="Login Illustration" className="w-48 md:w-72 rounded-3xl shadow-lg mt-4" />
+                <h2 className="text-lg md:text-xl font-bold text-center mt-6">Explore, Learn, and Enhance your skills</h2>
+                <p className="text-sm md:text-md font-medium text-center mt-4 leading-relaxed">
+                  Where artificial intelligence enables data-driven decision-making.
+                </p>
+              </div>
 
           {showForgetPass ? (
             <ForgetpassForm onBack={() => setShowForgetPass(false)} />

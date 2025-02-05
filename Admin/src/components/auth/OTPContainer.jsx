@@ -26,13 +26,11 @@ const OTPContainer = ({ email, onOTPVerified}) => {
 const handleVerifyApi = async (email,otp) => {
     try {
         const URL=`${CONFIG.BASE_URL}/taskapp/auth/checksecret/${email}/${otp}`;
-        console.log("URL",URL);
         const res =await axios.get(URL);
         console.log("OTP response",res.data);
         if(res.data.status === "success"){
             try {
                 const token=res.data.token;
-                console.log("Api token",token);
                 await dispatch(OTPVerify({ token }));
                 onOTPVerified(); // Notify parent (Login.jsx) that OTP verification is successful
                 navigate("/dashboard");
