@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema(
     },
     subRole: {
       type: String,
-      enum: ["soe", "designer", "developer", "tester"],
+      enum: ["soe","Sre", "designer", "developer", "tester"],
       default: function () {
         return this.role === "Junior" || this.role === "Senior" ? "tester" : null;
       },
@@ -47,6 +47,22 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Phone number is required"],
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",  
+      default: null,
+       // "registration" will be handled in controllers
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    deletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     active: {
       type: Boolean,
       default: true,
@@ -55,10 +71,14 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    deletedAt: {
-      type: Date,
+    profilePicture: {
+      type: String,
       default: null,
     },
+    tasks: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Task',
+    }],
   },
   {
     timestamps: true,
@@ -76,9 +96,5 @@ UserSchema.methods.isValidPassword = async function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-UserSchema.methods.softDelete = async function () {
-  this.deletedAt = new Date();
-  await this.save();
-};
 
 export default mongoose.model("User", UserSchema);

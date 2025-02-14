@@ -1,24 +1,36 @@
 //User.jsx
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, editUser, deleteUser } from "../redux/slice/auth/userSlice";
+import { addUser, deleteUser, editUser, fetchUsers } from "../redux/slice/User/userSlice";
 import AddUser from "../components/User/AddUser";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { MdModeEditOutline, MdDelete } from "react-icons/md";
 import CustomDeleteAlert from "../components/alert/CustomDeleteAlert";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+import { logowithname } from "../components/utils/logoIntoName";
 
 const User = () => {
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
-
-  //Redux Hooks 
+  const [DeletedUserName, setDeletedUserName] = useState('this user');
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.user.users);
+  useEffect(() => {
+    const getUsers = async () => {
+      await dispatch(fetchUsers());
+    
+      };
+      
+      getUsers();
+  }, [dispatch]);
+    // Redux Hooks
 
+  const Decodetoken =jwtDecode(localStorage.getItem("token"));
+  const users = useSelector((state) => state.user.users);
   const openAddUserDialog = (user = null) => {
     setUserToEdit(user);
     setIsAddUserOpen(true);
@@ -29,39 +41,57 @@ const User = () => {
     setUserToEdit(null);
   };
 
-  const handleDelete = (id) => {
-    setUserToDelete(id);
+  const handleDelete = (_id) => {
+    setDeletedUserName(users.find((user) => user._id === _id).name);
+    setUserToDelete(_id);
     setOpenDelete(true);
   };
 
-  const handleSubmit = (formData) => {
+const handleSubmit  =async (formData) => {
+  // Create a copy of formData to avoid direct mutation
+  const submissionData = { ...formData };
+
+  // Remove subRole if it's an empty string
+  if (submissionData.subRole === "") {
+    await delete submissionData.subRole;
+  }
+
+  try {
     if (userToEdit) {
       // Update existing user
-      dispatch(editUser({ id: userToEdit.id, data: formData }));
+      await dispatch(editUser({ id: userToEdit._id, data: submissionData }));
+      toast.success("User updated successfully!");
     } else {
       // Add new user
-      dispatch(addUser(formData));
+      await dispatch(addUser(submissionData));
+      toast.success("User added successfully!");
     }
+  
     closeAddUserDialog();
-  };
+    await dispatch(fetchUsers());
+  } catch (error) {
+    toast.error("Something went wrong!");
+    console.error("submit Add or Edit User", error.message);
+  }
+};
 
-  const confirmDelete = () => {
-    if (userToDelete !== null) {
-      dispatch(deleteUser(userToDelete));
-      toast.success("Deleted successfully!", {
-        position: "bottom-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+  const confirmDelete = async () => {
+    try {
+      if (userToDelete !== null) {
+        await dispatch(deleteUser(userToDelete));
+        toast.success("User deleted successfully!");
+        
+      }
+    } catch (error) {
+      toast.error("Failed to delete user!");
+      console.error("ConfirmDelete:",error.message);
+      
     }
     setOpenDelete(false);
     setUserToDelete(null);
+    await dispatch(fetchUsers()); 
   };
+
 
   return (
     <>
@@ -69,8 +99,9 @@ const User = () => {
         onOpen={openDelete}
         onCancel={() => setOpenDelete(false)}
         onDelete={confirmDelete}
-        title={"Delete User"}
-        message={`Are you sure you want to delete this user?`}
+        title={"Confirm Delete"}
+        message={`Are you sure you want to delete ${DeletedUserName} ?`}
+        buttonText={"Delete"}
       />
       {/* Add/Edit User Modal */}
       <AddUser
@@ -79,14 +110,15 @@ const User = () => {
         onOpen={isAddUserOpen}
         onSubmit={handleSubmit}
       />
-      <div className="p-6 w-full space-y-6 overflow-x-hidden">
+      <div className="p-6 md:p-2 w-full space-y-6 overflow-x-hidden">
         {/* Top Title with Add Button */}
         <div className="flex items-center justify-between">
           <h1 className="sm:text-3xl text-xl font-semibold text-gray-800">
             Users List
           </h1>
           <button
-            className="bg-blue-600 flex flex-row items-center gap-2 justify-between hover:bg-blue-900 text-white px-5 py-2 rounded-md shadow-md transition-all"
+            className={`bg-blue-600 flex flex-row items-center gap-2 justify-between hover:bg-blue-900 text-white px-5 py-2 rounded-md shadow-md transition-all
+                      ${Decodetoken.userLevel === "Admin"|| Decodetoken.userLevel === "Manager"? "" : "hidden"}`}
             onClick={() => openAddUserDialog()}
           >
             <IoPersonAddSharp />
@@ -95,20 +127,22 @@ const User = () => {
         </div>
 
         {/* Mobile View: Stacked Cards */}
-        <div className="block md:hidden mt-48 space-y-4">
-          {users.map((user) => (
+        <div className="block md:hidden space-y-4">
+          
+          {users && users.length > 0 ?(users.map((user,index) => (
+            
             <div
-              key={user.id}
-              className="p-4 bg-white rounded-lg shadow-md border border-gray-200 w-full"
+              key={user._id ? user._id : `user-${index}`}
+              className="p-4 bg-white rounded-lg shadow-lg border border-gray-200 w-full"
             >
               <div className="flex items-center space-x-4">
-                <div>{logowithname(user.fullName)}</div>
+                <div>{logowithname(user.name)}</div>
                 <div className="flex-1">
                   <h2 className="text-lg font-medium text-gray-800 break-words">
-                    {user.fullName}
+                    {user.name}
                   </h2>
                   <p className="text-sm text-gray-600 break-words">
-                    {user.designation}
+                    {user.subRole ? user.role + " " + user.subRole : user.role}
                   </p>
                 </div>
               </div>
@@ -118,8 +152,12 @@ const User = () => {
                   <p className="font-medium">{user.email}</p>
                 </div>
                 <div className="text-sm text-gray-600 flex flex-row font-bold items-center gap-2 break-words">
-                  <h6>Role:</h6>
-                  <p className="font-medium">{user.role}</p>
+                  <h6>User Level:</h6>
+                  <p className="font-medium">{user.role} {user.subRole ? `${user.subRole}` : ""}</p>
+                </div>
+                <div className="text-sm text-gray-600 flex flex-row font-bold items-center gap-2 break-words">
+                  <h6>Phone:</h6>
+                  <p className="font-medium">{user.phone}</p>
                 </div>
                 <div className="text-sm text-gray-600 flex flex-row font-bold items-center gap-2 break-words">
                   <h6>Status:</h6>
@@ -132,26 +170,34 @@ const User = () => {
                   </p>
                 </div>
               </div>
-              <div className="mt-4 flex justify-end space-x-2">
+              <div className={`mt-4 flex justify-end space-x-2 ${Decodetoken.userLevel==="Admin"|| Decodetoken.userLevel==="Manager"?"":"hidden"}`}>
                 <button
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
+                  className="px-4 py-2 bg-blue-100 text-blue-600 hover:bg-blue-700 hover:text-white rounded-md transition-all"
                   onClick={() => openAddUserDialog(user)}
                 >
-                  Edit
+                  <MdModeEditOutline />
                 </button>
                 <button
-                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
-                  onClick={() => handleDelete(user.id)}
+                  className={`px-4 py-2 bg-red-100 text-red-500 hover:bg-red-600 hover:text-white rounded-md transition-all
+                          ${Decodetoken.userLevel==="Admin"?"":"hidden"}`}
+                  onClick={() => handleDelete(user._id)}
                 >
-                  Delete
+                  <MdDelete />
                 </button>
               </div>
             </div>
-          ))}
+          ))):(
+            
+            <div className="text-center py-4 text-gray-500">
+              No users found.
+            </div>
+          
+          )}
+          
         </div>
-        <ToastContainer />
+
         {/* Desktop View: Table */}
-        <div className="hidden md:block bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="hidden md:block bg-white transition-all duration-300 rounded-lg shadow-lg overflow-hidden">
           <table className="min-w-full border-collapse">
             <thead className="bg-yellow-200 border-b">
               <tr>
@@ -159,72 +205,76 @@ const User = () => {
                   Full Name
                 </th>
                 <th className="px-6 py-3 text-left text-md font-bold text-gray-600">
-                  Designation
-                </th>
-                <th className="px-6 py-3 text-left text-md font-bold text-gray-600">
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-md font-bold text-gray-600">
-                  Role
+                  User Level
+                </th>
+                <th className="px-6 py-3 text-left text-md font-bold text-gray-600">
+                  Phone
                 </th>
                 <th className="px-6 py-3 text-left text-md font-bold text-gray-600">
                   Status
                 </th>
-                <th className="px-6 py-3 text-center text-md font-bold text-gray-600">
+                <th className={`px-6 py-3 text-center text-md font-bold text-gray-600 ${Decodetoken.userLevel==="Admin"|| Decodetoken.userLevel==="Manager"?"":"hidden"} `}>
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr
-                  key={user.id}
-                  className="border-b hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex flex-row gap-2 items-center">
-                      <div>{logowithname(user.fullName)}</div>
-                      <p className="text-gray-600">{user.fullName}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">
-                    {user.designation}
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                  <td className="px-6 py-4 text-gray-600">{user.role}</td>
-                  <td className="px-6 py-4">
-                    <div
-                      className={`inline-block px-5 py-2 text-sm font-medium rounded-full ${
-                        user.active
-                          ? "bg-green-100 text-green-600"
-                          : "bg-red-100 text-red-600"
-                      }`}
-                    >
-                      {user.active ? "Active" : "Inactive"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center space-x-2">
-                    <button
-                      className="px-4 py-2 text-blue-600 rounded-md hover:bg-blue-700 hover:text-white transition-all"
-                      onClick={() => openAddUserDialog(user)}
-                    >
-                      <div className="flex gap-2 flex-row justify-between items-center">
-                        <MdModeEditOutline />
-                        <p>Edit</p>
+              {users && users.length > 0 ? (
+                users.map((user,index) => (
+                  <tr
+                    key={user._id ? user._id : `user-${index}`}
+                    className="border-b hover:bg-gray-50 hover:shadow-lg transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex flex-row gap-2 items-center">
+                        <div>{logowithname(user.name)}</div>
+                        <p className="text-gray-600">{user.name}</p>
                       </div>
-                    </button>
-                    <button className="px-4 py-2 text-red-500 rounded-md hover:bg-red-600 hover:text-white transition-all">
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      {user.email}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{user.role} {user.subRole ? `${user.subRole}` : ""}</td>
+                    <td className="px-6 py-4 text-gray-600">{user.phone}</td>
+                    <td className="px-6 py-4">
                       <div
-                        className="flex gap-2 flex-row justify-between items-center"
-                        onClick={() => handleDelete(user.id)}
+                        className={`inline-block px-5 py-2 text-sm font-medium rounded-full ${
+                          user.active
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
+                      >
+                        {user.active ? "Active" : "Inactive"}
+                      </div>
+                    </td>
+                    <td className={`px-6 py-4 text-center space-x-2 ${Decodetoken.userLevel==="Admin"|| Decodetoken.userLevel==="Manager"?"":"hidden"}`}>
+                      <button
+                        className="px-4 py-2 bg-blue-100 text-blue-600 hover:bg-blue-700 hover:text-white rounded-md transition-all"
+                        onClick={() => openAddUserDialog(user)}
+                      >
+                        <MdModeEditOutline />
+                      </button>
+                      <button
+                        className={`px-4 py-2 bg-red-100 text-red-500 hover:bg-red-600 hover:text-white rounded-md transition-all
+                        ${Decodetoken.userLevel==="Admin"?"":"hidden"}` }
+                        onClick={() => handleDelete(user._id)}
                       >
                         <MdDelete />
-                        <p>Delete</p>
-                      </div>
-                    </button>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ):(
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-gray-500">
+                    No users found.
                   </td>
                 </tr>
-              ))}
+              )}
+              
             </tbody>
           </table>
         </div>
@@ -233,54 +283,6 @@ const User = () => {
   );
 };
 
-// Utility functions
-export function getInitials(fullName) {
-  const names = fullName.split(" ");
-  const initials = names.slice(0, 2).map((name) => name[0].toUpperCase());
-  return initials.join("");
-}
 
-const colors = [
-  "bg-red-500",
-  "bg-blue-500",
-  "bg-green-500",
-  "bg-yellow-500",
-  "bg-purple-500",
-  "bg-pink-500",
-  "bg-indigo-500",
-  "bg-teal-500",
-  "bg-gray-500",
-  "bg-orange-500",
-  "bg-lime-500",
-  "bg-cyan-500",
-  "bg-fuchsia-500",
-  "bg-amber-500",
-  "bg-violet-500",
-  "bg-rose-500",
-  "bg-emerald-500",
-];
-
-function getUniqueColor(name) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash); // Generate a hash
-  }
-  const colorIndex = Math.abs(hash) % colors.length; // Map hash to a color index
-  return colors[colorIndex];
-}
-
-export function logowithname(name) {
-  const uniqueColor = getUniqueColor(name);
-
-  return (
-    <div className="flex gap-4 items-center">
-      <div
-        className={`w-10 h-10 rounded-full text-white ${uniqueColor} flex items-center justify-center`}
-      >
-        {getInitials(name)}
-      </div>
-    </div>
-  );
-}
 
 export default User;

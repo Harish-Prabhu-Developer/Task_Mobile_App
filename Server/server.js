@@ -3,6 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./src/Config/db.js";
 import authRouter from "./src/Route/authRoute.js";
+import UserRouter from "./src/Route/userRoute.js";
+import ProjectRouter from "./src/Route/projectRoute.js";
+import TaskRouter from "./src/Route/taskRoute.js";
 
 dotenv.config();
 const app = express();
@@ -13,6 +16,10 @@ const PORT = process.env.PORT || 5000;
 app.get("/", (req, res) => res.status(200).json("Welcome to TaskApp!"));
 
 app.use("/taskapp/auth", authRouter);
+app.use("/taskapp/users",UserRouter);
+app.use("/taskapp/projects",ProjectRouter);
+app.use("/taskapp/tasks",TaskRouter);
+
 connectDB()
   .then(() => {
     app.listen(PORT, () => {

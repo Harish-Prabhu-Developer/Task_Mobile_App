@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 
-const CustomDeleteAlert = ({ onCancel, onDelete, onOpen,title,message }) => {
+const CustomDeleteAlert = ({ onCancel, onDelete, onOpen,title,message,buttonText }) => {
+  
+    useEffect(() => {
+      const handleKeyDown = (event) => {
+        if (event.key === "Escape") {
+          onCancel();
+        }
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }, [onCancel]);
   return (
     <>
       {onOpen &&(
@@ -11,8 +23,8 @@ const CustomDeleteAlert = ({ onCancel, onDelete, onOpen,title,message }) => {
             <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
             <button
               onClick={onCancel}
-              className="p-2 rounded-lg hover:bg-gray-200 transition-colors">
-              <IoClose size={20} className="text-gray-600" />
+              className="p-2 rounded-lg hover:text-white hover:bg-red-500 transition-colors">
+              <IoClose size={20} />
             </button>
           </div>
           <p className="text-sm text-gray-600 mb-6">
@@ -29,7 +41,7 @@ const CustomDeleteAlert = ({ onCancel, onDelete, onOpen,title,message }) => {
               onClick={onDelete}
               className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition-all"
             >
-              Delete
+              {buttonText}
             </button>
           </div>
         </div>

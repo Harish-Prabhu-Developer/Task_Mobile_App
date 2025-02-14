@@ -1,5 +1,5 @@
 //SideandMobilenavbar.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RiDashboard3Line } from "react-icons/ri";
 import { FaUserPlus, FaTasks, FaUserCircle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -9,9 +9,11 @@ import { RiTodoFill } from "react-icons/ri";
 import { GrInProgress } from "react-icons/gr";
 import { IoFolderOpenSharp, IoLogOut, IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/slice/auth/authSlice";
+import { logout, setProfile } from "../../redux/slice/auth/authSlice";
 import { IMAGES } from "../../Config";
 import Switch from "../auth/Switch";
+import Profile from "../User/Profile";
+import CustomDeleteAlert from "../alert/CustomDeleteAlert";
 const MENU_ITEMS = [
   { id: "dashboard", name: "Dashboard", icon: <RiDashboard3Line /> },
   { id: "projects", name: "Projects", icon: <IoFolderOpenSharp /> },
@@ -43,19 +45,23 @@ const MENU_ITEMS = [
   },
 ];
 
+
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isOpen, setIsOpen] = useState(false);
-  const [tfaEnabled, setTfaEnabled] = useState(false);
-  const [isProfileHovered, setIsProfileHovered] = useState(false);
-  const [ShowProfileDialog,setShowProfileDialog]= useState(false);
-  const [openSubMenu, setOpenSubMenu] = useState(null);
+  const { user } = useSelector((state) => state.auth);
+
   const linkClasses =
   "flex items-center gap-4 p-3 rounded-lg transition-all duration-300 hover:bg-slate-600 text-white";
   const activeLinkClasses =
     "flex items-center gap-4 p-3 rounded-lg bg-blue-600 text-white";
+  useEffect(() => {
+    dispatch(setProfile());
+  }, [dispatch]);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
@@ -66,33 +72,27 @@ const Sidebar = () => {
 
   return (
     <>
-    <div className="flex h-full">
-      <div
-        className={`${
-          isOpen || isProfileHovered ? "w-72" : "w-20"
-        } bg-gradient-to-t from-cyan-950 to-blue-800 text-white transition-all duration-300 flex flex-col relative h-full shadow-lg`}
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => {
-          if (!isProfileHovered) setIsOpen(false);
-        }}
-      >
-        {/* Logo & Title */}
-        <div className="flex items-center gap-4 px-4 mt-6">
-          <img
-            src={IMAGES.companyLogo}
-            alt="Company Logo"
-            className={`rounded-md ${isOpen ? "w-10 h-10" : "w-8 h-8"}`}
-          />
-          <h1
-            className={`text-xl font-bold transition-opacity ${
-              isOpen ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            SWOMB
-          </h1>
-        </div>
+      <div className="flex h-full">
+        <div
+          className={`${
+            isOpen || isProfileHovered ? "w-72" : "w-20"
+          } bg-gradient-to-t from-cyan-950 to-blue-800 text-white transition-all duration-300 flex flex-col relative h-full shadow-lg`}
+          onMouseEnter={() => setIsOpen(true)}
+          onMouseLeave={() => !isProfileHovered && setIsOpen(false)}
+        >
+          {/* Logo */}
+          <div className="flex items-center gap-4 px-4 mt-6">
+            <img
+              src={IMAGES.companyLogo}
+              alt="Company Logo"
+              className={`rounded-md ${isOpen ? "w-10 h-10" : "w-8 h-8"}`}
+            />
+            <h1 className={`text-xl font-bold ${isOpen ? "block" : "hidden"}`}>
+              SWOMB
+            </h1>
+          </div>
 
-        {/* Navigation Menu */}
+          {/* Navigation Menu with Role -based Links */}
           <nav className="mt-6 w-full flex flex-col gap-2 px-4">
             {MENU_ITEMS.map((item) => (
               <NavLink
@@ -103,116 +103,37 @@ const Sidebar = () => {
                 }
               >
                 <i className="text-2xl">{item.icon}</i>
-                <span
-                  className={`transition-opacity ${
-                    isOpen ? "opacity-100" : "opacity-0"
-                  }`}
-                >
+                <span className={`${isOpen ? "block" : "hidden"}`}>
                   {item.name}
                 </span>
-
-              </NavLink>         
+              </NavLink>
             ))}
           </nav>
-        
 
-        {/* Profile Section */}
-        <div
-          className="mt-auto w-full px-4 py-4 bg-blue-900 rounded-t-lg"
-          onMouseEnter={() => setIsProfileHovered(true)}
-          onMouseLeave={() => {
-            setIsProfileHovered(false);
-            setIsOpen(false);
-          }}
-        >
-          <div className="flex items-center justify-between gap-4">
-            <img
-              src={IMAGES.profileImage}
-              alt="Profile"
-              className="w-12 h-12 rounded-full border-2 border-white"
-            />
-            <div
-              className={`transition-opacity ${
-                isOpen ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <h2 className="text-sm font-semibold">John Doe</h2>
-              <p className="text-xs text-yellow-300">Admin</p>
-            </div>
-            <button
-              className="p-2 bg-transparent rounded-lg hover:bg-yellow-200"
-              onClick={() => setShowProfileDialog(true)}
-            >
-              <MdEdit size={20} />
-            </button>
-          </div>
-
-          {/* TFA Toggle */}
-          <div className="flex items-center justify-between mt-2 pt-2 transition-all duration-300 ">
-            <span
-              className={`transition-opacity font-bold ${!isOpen && "hidden"}`}
-            >
-              TFA
-            </span>
-            <div className={`transition-all duration-300 shadow-lg`}>
-              <Switch
-                checked={tfaEnabled}
-                onChange={() => setTfaEnabled(!tfaEnabled)}
+          {/* Profile Section */}
+          <div
+            className={`mt-auto w-full transition-all duration-300 p-4 cursor-pointer ${isOpen?'':'hidden'}`}
+            onClick={() => setShowProfileDialog(true)}
+          >
+            <div className="flex items-center gap-4">
+              <img
+                src={IMAGES.profileImage}
+                alt="Profile"
+                className="rounded-full border-2 border-white w-12 h-12"
               />
+              {isOpen && (
+                <div className="justify-center">
+                  <h2 className="text-sm text-center font-semibold">{user?.name || "User"}</h2>
+                  <p className="text-xs text-center text-yellow-300">{user?.userLevel?.trim() || "Admin"}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        {/* Logout Button */}
-        <button
-          className={`flex items-center justify-center gap-4 w-full p-3 bg-red-800 hover:bg-red-600 transition-all duration-700 text-white 
-            ${isOpen && "opacity-100"}`}
-          onClick={handleLogout}
-        >
-          <IoLogOut size={24} />
-          <p className={`transition-opacity ${!isOpen && "hidden"}`}>Logout</p>
-        </button>
       </div>
-    </div>
-   {/* Profile Dialog */}
-   {ShowProfileDialog && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white w-96 rounded-2xl shadow-xl p-6">
-            <div className="flex justify-between items-center border-b pb-3">
-              <h2 className="text-xl font-semibold text-gray-800">Edit Profile</h2>
-              <button className="p-2 text-gray-500 hover:bg-red-500 hover:text-white rounded-lg transition-all" onClick={() => setShowProfileDialog(false)}>
-                <IoClose size={22} />
-              </button>
-            </div>
 
-            <div className="flex flex-col items-center text-center mt-4">
-              <img src={IMAGES.profileImage} alt="Profile" className="w-20 h-20 rounded-full border-4 border-gray-300 shadow-md" />
-              <h2 className="text-lg font-bold text-gray-800 mt-2">you@swomb.app</h2>
-              <p className="text-md text-yellow-600 mt-1">Admin</p>
-            </div>
-
-            <div className="mt-4 space-y-4">
-              <div className="flex justify-between items-center">
-                <label className="font-medium text-gray-700">Name</label>
-                <input type="text" className="w-2/3 p-2 border border-gray-300 rounded-lg" />
-              </div>
-              <div className="flex justify-between items-center">
-                <label className="font-medium text-gray-700">Password</label>
-                <input type="password" className="w-2/3 p-2 border border-gray-300 rounded-lg" />
-              </div>
-              <div className="flex justify-between items-center">
-                <label className="font-medium text-gray-700">Phone</label>
-                <input type="text" className="w-2/3 p-2 border border-gray-300 rounded-lg" />
-              </div>
-              <div className="flex justify-between items-center">
-                <label className="font-medium text-gray-700">TFA</label>
-                <Switch checked={tfaEnabled} onChange={() => setTfaEnabled(!tfaEnabled)} />
-              </div>
-              <button className="w-full p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-950 transition-all">Save Changes</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Profile Dialog */}
+      <Profile view={showProfileDialog} onClose={() => setShowProfileDialog(false)} />
     </>
   );
 };
@@ -220,19 +141,22 @@ const Sidebar = () => {
 const Mobilenavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [ShowProfileDialog,setShowProfileDialog]= useState(false);
   const [tfaEnabled, setTfaEnabled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [ConfirmLogDialog, setConfirmLogDialog] = useState(false);
+  
   const linkClasses =
     "flex items-center gap-4 text-white rounded-md transition-all";
   const activeLinkClasses =
     "flex items-center gap-4 text-yellow-300 bg-blue-800 rounded-md transition-all";
   const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
+      setShowProfileDialog(false);
       dispatch(logout());
       navigate("/login", { replace: true });
       setIsProfileOpen(false);
-    }
+    
   };
   return (
     <>
@@ -310,7 +234,7 @@ const Mobilenavbar = () => {
           <div
             className="flex border-b border-gray-300 items-center justify-center p-2 text-white hover:bg-blue-100 cursor-pointer rounded-t-lg transition-all"
             onClick={() => {
-              alert("open");
+              setShowProfileDialog(true);
               setIsProfileOpen(false);
             }}
           >
@@ -319,13 +243,24 @@ const Mobilenavbar = () => {
           {/* Logout Button */}
           <div
             className="flex items-center gap-2 justify-center p-2 text-yellow-500 hover:bg-red-100 cursor-pointer rounded-b-lg transition-all"
-            onClick={handleLogout}
+            onClick={() => {
+              setConfirmLogDialog(true);
+              setIsProfileOpen(false);
+            }}
           >
             <IoLogOut size={24} />
             <span className="text-md font-medium">Logout</span>
           </div>
         </div>
       )}
+       <Profile view={ShowProfileDialog} onClose={() => setShowProfileDialog(false)} />
+       <CustomDeleteAlert
+            message={"Are you sure you want to logout?"}
+            title={"Logout Confirmation"}
+            buttonText={"Logout"}
+            onOpen={ConfirmLogDialog}
+            onDelete={handleLogout}
+            onCancel={() => setConfirmLogDialog(false)}/>
     </>
   );
 };

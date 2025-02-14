@@ -1,23 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
+import Switch from "../auth/Switch";// Import the custom switch component
+
+const ROLES = ["User", "Admin", "Manager", "Junior", "Senior"];
+const SUB_ROLES = ["soe", "Sre", "designer", "developer", "tester"];
 
 const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit, onOpen }) => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    designation: "",
+    name: "",
     email: "",
     role: "",
-    status: "Active", // Default value for the status
+    subRole: "",
+    phone: "",
+    password: "Swomb@123",
+    tfa: true, // Changed to boolean
+    active: true, // Changed to boolean
   });
 
   useEffect(() => {
     if (userToEdit) {
       setFormData({
-        fullName: userToEdit.fullName,
-        designation: userToEdit.designation,
-        email: userToEdit.email,
-        role: userToEdit.role,
-        status: userToEdit.active ? "Active" : "Inactive",
+        name: userToEdit.name || "",
+        email: userToEdit.email || "",
+        role: userToEdit.role || "",
+        subRole: userToEdit.subRole || "",
+        phone: userToEdit.phone || "",
+        tfa: !!userToEdit.tfa, // Ensure it's a boolean
+        active: !!userToEdit.active, // Ensure it's a boolean
       });
     }
   }, [userToEdit]);
@@ -28,11 +37,7 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit, onOpen }) => {
         closeAddUserDialog();
       }
     };
-
-    // Add the event listener
     document.addEventListener("keydown", handleKeyDown);
-
-    // Cleanup the event listener
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -40,18 +45,28 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit, onOpen }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      const updatedForm = { ...prev, [name]: value };
+
+      if (name === "role") {
+        if (value === "Junior" || value === "Senior") {
+          updatedForm.subRole = updatedForm.subRole || "tester";
+        } else {
+          updatedForm.subRole = "";
+        }
+      }
+
+      return updatedForm;
+    });
+  };
+
+  const handleToggle = (name) => {
+    setFormData((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({
-      ...formData,
-      active: formData.status === "Active",
-    });
+    onSubmit(formData);
   };
 
   return (
@@ -64,43 +79,29 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit, onOpen }) => {
                 {userToEdit ? "Edit User" : "Add New User"}
               </h2>
               <div
-                className="p-2 bg-white text-black rounded-md hover:bg-red-600 hover:text-white transition-all"
+                className="p-2 bg-white text-black rounded-md hover:bg-red-600 hover:text-white transition-all cursor-pointer"
                 onClick={closeAddUserDialog}
               >
                 <IoClose size={20} />
               </div>
             </div>
             <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Name */}
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">
-                  Full Name
-                </label>
+                <label className="block text-gray-900 font-semibold mb-1">Name</label>
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   placeholder="Full Name"
                   className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
                 />
               </div>
+
+              {/* Email */}
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">
-                  Designation
-                </label>
-                <input
-                  type="text"
-                  name="designation"
-                  value={formData.designation}
-                  onChange={handleChange}
-                  placeholder="Designation"
-                  className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-900 font-semibold mb-1">
-                  Email
-                </label>
+                <label className="block text-gray-900 font-semibold mb-1">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -110,33 +111,67 @@ const AddUser = ({ closeAddUserDialog, userToEdit, onSubmit, onOpen }) => {
                   className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
                 />
               </div>
+
+              {/* Role Dropdown */}
               <div>
-                <label className="block text-gray-900 font-semibold mb-1">
-                  Role
-                </label>
-                <input
-                  type="text"
+                <label className="block text-gray-900 font-semibold mb-1">Role</label>
+                <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  placeholder="Role"
+                  className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
+                >
+                  <option value="" disabled>Select Role</option>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* SubRole Dropdown */}
+              {["Junior", "Senior"].includes(formData.role) && (
+                <div>
+                  <label className="block text-gray-900 font-semibold mb-1">Sub Role</label>
+                  <select
+                    name="subRole"
+                    value={formData.subRole}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
+                  >
+                    <option value="" disabled>Select SubRole</option>
+                    {SUB_ROLES.map((subRole) => (
+                      <option key={subRole} value={subRole}>{subRole}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Phone */}
+              <div>
+                <label className="block text-gray-900 font-semibold mb-1">Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Phone Number"
                   className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
                 />
               </div>
-              <div>
-                <label className="block text-gray-900 font-semibold mb-1">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border text-gray-600 rounded-lg focus:ring focus:ring-blue-300"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
+
+              {/* TFA Switch */}
+              <div className="flex items-center justify-between">
+                <label className="block text-gray-900 font-semibold">TFA Status</label>
+                <Switch checked={formData.tfa} onChange={() => handleToggle("tfa")} activeColor="bg-green-500" inActiveColor="bg-gray-500 border-black border-1" color="bg-white" />
               </div>
+
+              {/* Active Status Switch */}
+              <div className="flex items-center justify-between">
+                <label className="block text-gray-900 font-semibold">Active Status</label>
+                <Switch checked={formData.active} onChange={() => handleToggle("active")} activeColor="bg-green-500" inActiveColor="bg-gray-500 border-black border-1" color="bg-white"  />
+              </div>
+
+              {/* Action Buttons */}
               <div className="flex justify-end mt-4 space-x-2">
                 <button
                   type="button"

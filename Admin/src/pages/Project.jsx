@@ -1,9 +1,265 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import { FaTh, FaList, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import AddProject from "../components/Project/AddProject";
+import { useDispatch, useSelector } from "react-redux";
+import { createProject, deleteProject, fetchProjects, updateProject } from "../redux/slice/Project/projectSlice";
+import { toast } from "react-toastify";
+
 
 const Project = () => {
-  return (
-    <div className='text-3xl m-2'>Project</div>
-  )
-}
+  const [view, setView] = useState("board");
+  const dispatch =useDispatch();
 
-export default Project
+  useEffect(() => {
+    const getProjects =async()=>{
+      await dispatch(fetchProjects());
+    };
+    getProjects();
+  },[dispatch]);
+
+  const projectData =useSelector((state)=>state.project.projects);
+  // Handle missing token
+  const token = localStorage.getItem("token");
+  const Decodetoken = token ? jwtDecode(token) : {};
+
+  const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState(null);
+
+  
+  const openAddProjectDialog = (project = null) => {
+    setProjectToEdit(project);
+    setIsAddProjectOpen(true);
+  };
+
+  const closeAddProjectDialog = () => {
+    setIsAddProjectOpen(false);
+    setProjectToEdit(null);
+  };
+
+  const handleProjectSubmit = async (projectData) => {
+    if (projectToEdit) {
+      //updated project
+      console.log("Updating Project:", projectData);
+      try {
+        const res =await dispatch(updateProject({ projectId: projectToEdit._id, projectData }));
+        if (res.payload.status==='success'&&res.payload.msg==="Project updated successfully") {
+          toast.success('Project Updated Successfully');
+        }else if (res.payload.status==='fail') {
+          toast.error(res.payload.msg);
+        }
+      } catch (error) {
+          toast.error(error.message);
+          console.log("Updated Project.jsx Error :",error.message);
+          
+      }
+      
+    } else {
+      //add new Project
+        try {
+          console.log("Creating New Project:", projectData);
+          const res= await dispatch(createProject(projectData));
+          if (res.payload.status==='success'&&res.payload.msg==='Project created successfully') {
+            await dispatch(fetchProjects());
+            toast.success('Project added successfully');
+          }else if (res.payload.status==='fail') {
+            toast.error(res.payload.msg);
+          }
+          console.log("Project.jsx res :",res.payload.msg);
+     
+          
+        } catch (error) {
+            toast.error(error.message);
+            console.warn("Add Project error on Project.jsx : ",error.message);
+                      
+        }     
+    }
+
+    closeAddProjectDialog();
+  };
+
+
+  const handleDeleteProject = async (projectId) => {
+    console.log("Deleting Project:", projectId);
+    try {
+      const res =await dispatch(deleteProject(projectId));
+      if (res.payload.status==='success'&&res.payload.msg==="Project deleted successfully") {
+        await dispatch(fetchProjects());
+        toast.success('Project removed Successfully');
+      }else if (res.payload.status==='fail') {
+        toast.error(res.payload.msg);
+      }
+    } catch (error) {
+      console.log("Project Deleted Error :",error.message);
+      toast.error(error.message);
+    }
+  };
+
+  return (
+    <>
+      <AddProject
+        closeAddProjectDialog={closeAddProjectDialog}
+        projectToEdit={projectToEdit}
+        onSubmit={handleProjectSubmit}
+        onOpen={isAddProjectOpen}
+      />
+
+      <div className="p-6 md:p-2 w-full space-y-6 bg-white min-h-screen scrollbar-hide">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+
+          {/* Add Button (Admin & Manager Only) */}
+          {(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") && (
+            <button
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md active:scale-95"
+            onClick={() => openAddProjectDialog()}
+          >
+          
+              <FaPlus className="text-sm" />
+              <span className="text-sm font-medium">Add Project</span>
+            </button>
+          )}
+        </div>
+
+        {/* Tabs (Board View / List View) */}
+        <div className="flex gap-4">
+          <button
+            className={`flex items-center gap-2 px-5 py-2 border-2 rounded-lg transition-all duration-200 shadow-sm
+              ${view === "board" ? "border-blue-600 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-600 bg-white hover:bg-gray-100"}`}
+            onClick={() => setView("board")}
+          >
+            <FaTh className="text-lg" />
+            <span className="text-sm font-medium">Board View</span>
+          </button>
+
+          {/* Hide List View on Mobile */}
+          <button
+            className={`hidden sm:flex items-center gap-2 px-5 py-2 border-2 rounded-lg transition-all duration-200 shadow-sm
+              ${view === "list" ? "border-blue-600 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-600 bg-white hover:bg-gray-100"}`}
+            onClick={() => setView("list")}
+          >
+            <FaList className="text-lg" />
+            <span className="text-sm font-medium">List View</span>
+          </button>
+        </div>
+
+        {/* View Content */}
+        {view === "board" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projectData.map((project, index) => (
+              <div
+                key={project._id || index}
+                className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-200"
+              >
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-gray-900">{project.name}</h2>
+                  <div className="flex gap-2">
+                    <button className="text-gray-500 hover:text-blue-600 transition-all" onClick={() => openAddProjectDialog(project)}>
+                      <FaEdit />
+                    </button>
+                    <button className="text-gray-500 hover:text-red-600 transition-all" onClick={() =>handleDeleteProject(project._id)}>
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">{project.description}</p>
+                <div className="text-sm flex flex-row items-center justify-start text-gray-600 mt-2">
+                  <strong className="font-semibold">Due Date: </strong>
+                  <span className="ml-1">
+                    {project.endDate
+                      ? new Date(project.endDate).toLocaleDateString("en-US", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "numeric",
+                        })
+                      : "N/A"}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  <strong className="font-semibold">Created by:</strong> {project.createdBy?.name || "Unknown"}
+                </p>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  <strong className="font-semibold">Updated by:</strong> {project.updatedBy?.name || "Not Updated"}
+                </p>
+
+                {/* Styled Status Tag */}
+                <span
+                  className={`mt-4 inline-block px-4 py-1 text-xs font-bold rounded-full transition-all
+                    ${
+                      project.status === "In Progress" ? "bg-blue-500 text-white" :
+                      project.status === "Not Started" ? "bg-yellow-500 text-white" :
+                      "bg-green-500 text-white"
+                    }`}
+                >
+                  {project.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          // List View (Hidden on Mobile)
+          <div className="hidden sm:block bg-white rounded-xl shadow-lg overflow-hidden">
+            <table className="w-full border-collapse">
+                <thead className="bg-yellow-200 text-gray-700 text-left">
+                  <tr>
+                    <th className="p-4 text-md text-left">Project Name</th>
+                    <th className="p-4 text-md text-left">Description</th>
+                    <th className="p-4 text-md text-left">Team Members</th>
+                    <th className="p-4 text-md text-left">Due Date</th>
+                    <th className="p-4 text-md text-left">Status</th>
+                    <th className="p-4 text-md text-left">Created By</th>
+                    <th className="p-4 text-md text-left">Updated By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {projectData.map((project, index) => (
+                    <tr key={project._id || index} className={`border-t ${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition-all`}>
+                      <td className="p-4">{project.name}</td>
+                      <td className="p-4">{project.description}</td>
+                      <td className="p-4">
+                        {project.teamMembers.length > 0 ? (
+                          <span className="text-xs text-gray-700">
+                            {project.teamMembers
+                              .slice(0, 4) // Take only the first 5 members
+                              .map(member => member.name)
+                              .join(", ")}{project.teamMembers.length > 4 ? "..." : ""}
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 text-xs">Members not assigned</span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        {project.endDate
+                          ? new Date(project.endDate).toLocaleDateString("en-US", {
+                              month: "2-digit",
+                              day: "2-digit",
+                              year: "numeric",
+                            })
+                          : "N/A"}
+                      </td>
+                      <td className="p-2">
+                        <span className={`inline-block px-4 py-1 text-xs font-bold rounded-full transition-all
+                          ${project.status === "In Progress" ? "bg-blue-500 text-white" :
+                            project.status === "Not Started" ? "bg-yellow-500 text-white" :
+                            "bg-green-500 text-white"
+                          }`}>
+                          {project.status}
+                        </span>
+                      </td>
+                      <td className="p-4">{project.createdBy?.name || "Unknown"}</td>
+                      <td className="p-4">{project.updatedBy?.name || "Not Updated"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default Project;

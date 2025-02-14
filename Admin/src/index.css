@@ -8,3 +8,11 @@ body {
   min-height: 100vh;
 }
 
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+.scrollbar-hidden {
+  scrollbar-width: none;
+}

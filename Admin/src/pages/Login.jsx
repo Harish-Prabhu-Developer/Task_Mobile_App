@@ -77,7 +77,7 @@ const Login = () => {
     const credentials = { email, password };
     try {
       const response = await dispatch(loginUser(credentials)).unwrap();
-      console.log("Login response:", response);  // Debug to see API response
+
     } catch (error) {
       console.error("Login failed:", error.message);
     }
@@ -154,7 +154,11 @@ const Login = () => {
                     </p>
                   )}
                 </div>
-
+                {error && (
+                    <p className="text-red-600 p-2 text-center font-medium text-sm sm:text-md">
+                      {error}
+                    </p>
+                  )}
                 <div className="flex justify-between items-center">
                   <label className="flex items-center text-sm">
                     <input
