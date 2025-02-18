@@ -9,11 +9,12 @@ import { TodosTasks } from "./components/Tasks/TodosTasks";
 import { InProgressTasks } from "./components/Tasks/InProgressTasks";
 import { CompletedTasks } from "./components/Tasks/CompletedTasks";
 import Login from "./pages/Login";
-import { CONFIG,IMAGES } from "./Config";
 import { useDispatch } from "react-redux";
 import { setProfile } from "./redux/slice/auth/authSlice";
 import Header from "./components/navigation/Header";
 import { jwtDecode } from "jwt-decode";
+import CustomLoading from "./components/CustomComponent/CustomLoading";
+
 // ✅ Protected Route Component
 const ProtectedRoute = () => {
   const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -24,16 +25,13 @@ const ProtectedRoute = () => {
 // ✅ Layout Component
 const Layout = () => {
   return (
-    <div className="flex h-screen">
+    <div className="flex max-h-screen">
       {/* Sidebar for Large Screens */}
       <div className="hidden sm:flex w-screen h-screen">
         <Sidebar />
         <div className="flex-1 flex flex-col">
-          {/* Header */}
           <Header />
-          
-          {/* Main Content */}
-          <div className="flex-1 p-4 overflow-auto">
+          <div className="flex-1 bg-slate-100 p-4 overflow-auto">
             <Outlet />
           </div>
         </div>
@@ -41,74 +39,88 @@ const Layout = () => {
 
       {/* Mobile Navbar for Small Screens */}
       <div className="sm:hidden w-screen h-screen flex flex-col">
-        <div className="mb-12">
-          <Mobilenavbar />
+        <Mobilenavbar />
+        <div className="flex-1 overflow-auto p-4 bg-slate-100">
+          <Outlet />
         </div>
-        <Outlet />
       </div>
     </div>
   );
 };
 
-
 // ✅ Main App Component
 const App = () => {
   const dispatch = useDispatch();
   const [decodedToken, setDecodedToken] = useState(null);
+  const [userRole, setUserRole] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      const loggedIn = localStorage.getItem("isLoggedIn");
 
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setDecodedToken(decoded);
-      } catch (error) {
-        console.error("Invalid token:", error);
-        localStorage.removeItem("token"); // Remove invalid token
-        localStorage.removeItem("isLoggedIn");
+      if (token && loggedIn) {
+        setIsLoggedIn(true);
+        try {
+          const decoded = jwtDecode(token);
+          console.log("Decoded Token:", decoded);
+
+          // Extract first word of userLevel (e.g., "Senior" from "Senior Developer")
+          setUserRole(decoded?.userLevel?.split(" ")[0] || "");
+          setDecodedToken(decoded);
+        } catch (error) {
+          console.error("Invalid token:", error);
+          localStorage.removeItem("token");
+          localStorage.removeItem("isLoggedIn");
+          setIsLoggedIn(false);
+        }
       }
-    }
 
-    dispatch(setProfile()); // Fetch user profile on mount
+      await dispatch(setProfile()); // Fetch user profile on mount
+      setIsLoading(false); // Mark loading complete
+    };
+
+    fetchData();
   }, [dispatch]);
 
+  console.log("User Role:", userRole);
+
+  // Allowed roles
+  const allowedRoles = ["Admin", "Manager", "User"];
+
+  // Show loading screen while processing auth
+  if (isLoading) {
+    return <CustomLoading />;
+  }
+
   return (
-    <>
-      <Routes>
-        {/* Public Route - Login */}
-        <Route path="/login" element={<Login />} />
+    <Routes>
+      {/* Login Route */}
+      <Route path="/login" element={isLoggedIn && decodedToken ? <Navigate to="/dashboard" replace /> : <Login />} />
 
-        {/* Protected Routes - Wrapped inside `ProtectedRoute` */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/projects" element={<Project  />} />
-            
-              {/* Role-Based Access for /users Route */}
-              {decodedToken?.userLevel === "Admin" ||
-              decodedToken?.userLevel === "Manager" ||
-              decodedToken?.userLevel === "User" ? (
-                <Route path="/users" element={<User />} />
-              ) : (
-                <Route path="/users" element={<Navigate to="/dashboard" replace />} />
-              )}
-
-            <Route path="/tasks" element={<Task />}>
-              <Route path="todos" element={<TodosTasks />} />
-              <Route path="in-progress" element={<InProgressTasks />} />
-              <Route path="completed" element={<CompletedTasks />} />
-            </Route>
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          {/* Ensure Routes are Always Available */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/projects" element={<Project />} />
+          <Route path="/users" element={<User />} />
+          <Route path="/tasks" element={<Task />}>
+            <Route path="todos" element={<TodosTasks />} />
+            <Route path="in-progress" element={<InProgressTasks />} />
+            <Route path="completed" element={<CompletedTasks />} />
           </Route>
         </Route>
+      </Route>
 
-        {/* Default Route (Redirect to Dashboard if Authenticated, Else Login) */}
-        <Route index element={<Navigate to="/dashboard" replace />} />
+      {/* Default Route */}
+      <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
 
-        {/* Catch-All Not Found - Redirect to Login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </>
+      {/* Catch-All Redirect */}
+      <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} replace />} />
+    </Routes>
   );
 };
 

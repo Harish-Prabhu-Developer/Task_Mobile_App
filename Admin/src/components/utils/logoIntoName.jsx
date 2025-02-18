@@ -8,7 +8,7 @@ import React from 'react'
   };
 
   // Utility function to generate a unique color for a user's logo
-  const colors = [
+  export const colors = [
     "bg-red-500",
     "bg-blue-500",
     "bg-green-500",
@@ -31,16 +31,16 @@ import React from 'react'
   };
 
   // Utility function to render a logo with the user's initials
-  const logowithname = (name) => {
+  const logowithname = (name,Styled) => {
     if (!name) return null; 
     const uniqueColor = getUniqueColor(name);
     return (
       <div
-        className={`w-10 h-10 rounded-full text-white ${uniqueColor} flex items-center justify-center`}
+        className={`${Styled} rounded-full text-white ${uniqueColor} flex items-center justify-center`}
       >
         {getInitials(name)}
       </div>
     );
   };
 
-  export { logowithname };
+  export { logowithname,getUniqueColor,getInitials };

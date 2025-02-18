@@ -59,16 +59,38 @@ const handleSubmit  =async (formData) => {
   try {
     if (userToEdit) {
       // Update existing user
-      await dispatch(editUser({ id: userToEdit._id, data: submissionData }));
-      toast.success("User updated successfully!");
+      try {
+        const res =await dispatch(editUser({ id: userToEdit._id, data: submissionData }));
+        if (res.payload.status==='success'&& res.payload.msg==='User updated successfully') {
+          toast.success("User updated successfully!");  
+          await dispatch(fetchUsers());
+        }else if (res.payload.status==='fail') {
+          toast.error(res.payload.msg);
+        }
+        
+      } catch (error) {
+        console.log("Updated User : ",error.message);
+        toast.error(error.message);
+      }
     } else {
       // Add new user
-      await dispatch(addUser(submissionData));
-      toast.success("User added successfully!");
+      try {
+        const res = await dispatch(addUser(submissionData));
+        if (res.payload.status==='success'&&res.payload.msg==='User created successfully') {
+          toast.success("User added successfully!");
+          await dispatch(fetchUsers());  
+        }else if (res.payload.status==='fail') {
+          toast.error(res.payload.msg);
+        }
+      
+      } catch (error) {
+        console.log("Added User : ",error.message);
+        toast.error(error.message);
+      }
     }
   
     closeAddUserDialog();
-    await dispatch(fetchUsers());
+    
   } catch (error) {
     toast.error("Something went wrong!");
     console.error("submit Add or Edit User", error.message);
@@ -78,8 +100,19 @@ const handleSubmit  =async (formData) => {
   const confirmDelete = async () => {
     try {
       if (userToDelete !== null) {
-        await dispatch(deleteUser(userToDelete));
-        toast.success("User deleted successfully!");
+        try {
+          const res = await dispatch(deleteUser(userToDelete));
+          if (res.payload.status==='success'&&res.payload.msg==='User deleted successfully') {
+            toast.success("User deleted successfully!");
+             await dispatch(fetchUsers());  
+          }else if (res.payload.status==='fail') {
+            toast.error(res.payload.msg);
+          }
+        
+        } catch (error) {
+          console.log("Deleted User : ",error.message);
+          toast.error(error.message);
+        }
         
       }
     } catch (error) {
@@ -89,7 +122,7 @@ const handleSubmit  =async (formData) => {
     }
     setOpenDelete(false);
     setUserToDelete(null);
-    await dispatch(fetchUsers()); 
+
   };
 
 
@@ -113,7 +146,7 @@ const handleSubmit  =async (formData) => {
       <div className="p-6 md:p-2 w-full space-y-6 overflow-x-hidden">
         {/* Top Title with Add Button */}
         <div className="flex items-center justify-between">
-          <h1 className="sm:text-3xl text-xl font-semibold text-gray-800">
+        <h1 className="text-3xl font-bold text-gray-900">
             Users List
           </h1>
           <button
@@ -136,7 +169,7 @@ const handleSubmit  =async (formData) => {
               className="p-4 bg-white rounded-lg shadow-lg border border-gray-200 w-full"
             >
               <div className="flex items-center space-x-4">
-                <div>{logowithname(user.name)}</div>
+                <div>{logowithname(user.name,"w-10 h-10")}</div>
                 <div className="flex-1">
                   <h2 className="text-lg font-medium text-gray-800 break-words">
                     {user.name}
@@ -230,7 +263,7 @@ const handleSubmit  =async (formData) => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex flex-row gap-2 items-center">
-                        <div>{logowithname(user.name)}</div>
+                        <div>{logowithname(user.name,"w-10 h-10")}</div>
                         <p className="text-gray-600">{user.name}</p>
                       </div>
                     </td>

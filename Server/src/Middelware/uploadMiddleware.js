@@ -4,7 +4,14 @@ import path from "path";
 // Set Storage Engine
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/"); // Define upload folder
+        let uploadPath = "uploads/";
+
+        // Check if it's a profile picture upload
+        if (req.baseUrl.includes("/users")) {
+            uploadPath = "uploads/profiles/"; // Store profile pictures in a separate folder
+        }
+
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
@@ -13,22 +20,18 @@ const storage = multer.diskStorage({
 
 // File Filter
 const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = /jpeg|jpg|png|gif/;
+    const allowedFileTypes = /jpeg|jpg|png|gif|pdf|docx/; // Allow images & documents
     const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedFileTypes.test(file.mimetype);
 
     if (extname && mimetype) {
         return cb(null, true);
     } else {
-        cb(new Error("Only images (jpeg, jpg, png, gif) are allowed"));
+        cb(new Error("Only images (jpeg, jpg, png, gif) and documents (pdf, docx) are allowed"));
     }
 };
 
-// Initialize Multer Upload
-const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-    fileFilter,
-});
+// Upload Middleware
+export const uploadAssets = multer({ storage, fileFilter }).array("assets", 8); // Multiple files (for tasks) and Accept up to 8 files at a time
+export const uploadProfile = multer({ storage, fileFilter }).single("profilePicture"); // Single file (for profile)
 
-export default upload;

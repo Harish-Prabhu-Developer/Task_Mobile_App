@@ -30,10 +30,11 @@ const AddProject = ({ closeAddProjectDialog, projectToEdit, onSubmit, onOpen }) 
 
   useEffect(() => {
     if (projectToEdit) {
+      console.log("Editing Project:", projectToEdit);
       setFormData({
         name: projectToEdit.name || "",
         description: projectToEdit.description || "",
-        teamMembers: projectToEdit.teamMembers || [],
+        teamMembers: projectToEdit.teamMembers.map((member) => member._id) || [],
         startDate: projectToEdit.startDate ? projectToEdit.startDate.split("T")[0] : "",
         endDate: projectToEdit.endDate ? projectToEdit.endDate.split("T")[0] : "",
         status: projectToEdit.status || "Not Started",
@@ -121,30 +122,43 @@ const AddProject = ({ closeAddProjectDialog, projectToEdit, onSubmit, onOpen }) 
               <div>
                 <label className="block text-gray-900 font-semibold mb-1">Team Members</label>
                 <Select
-                  isMulti
-                  options={users.map((user) => ({
-                    value: user._id,
-                    label: (
-                      <div className="flex items-center space-x-2">
-                        {logowithname(user.name)}
-                        <span className="text-gray-700">{user.name}</span>
-                      </div>
-                    ),
-                  }))}
-                  value={users
-                    .filter((user) => formData.teamMembers.includes(user._id))
-                    .map((user) => ({
-                      value: user._id,
-                      label: (
-                        <div className="flex items-center space-x-2">
-                          {logowithname(user.name)}
-                          <span className="text-gray-700">{user.name}</span>
-                        </div>
-                      ),
-                    }))}
-                  onChange={handleMultiSelectChange}
-                  className="w-full"
-                />
+  isMulti
+  options={users.map((user) => ({
+    value: user._id,
+    label: (
+      <div className="flex items-center space-x-2">
+        {logowithname(user.name,"w-7 h-7")}
+        <span className="text-gray-700">{user.name}</span>
+      </div>
+    ),
+  }))}
+
+  value={formData.teamMembers
+    .map((memberId) => {
+      const user = users.find((u) => u._id === memberId);
+      return user
+        ? {
+            value: user._id,
+            label: (
+              <div className="flex items-center space-x-2">
+                {logowithname(user.name,"w-7 h-7")}
+                <span className="text-gray-700">{user.name}</span>
+              </div>
+            ),
+          }
+        : null;
+    })
+    .filter(Boolean)} // Removes null values
+
+  onChange={(selectedOptions) =>
+    setFormData((prev) => ({
+      ...prev,
+      teamMembers: selectedOptions ? selectedOptions.map((option) => option.value) : [],
+    }))
+  }
+  className="w-full"
+/>
+
               </div>
               {/* Status Dropdown */}
               <div >

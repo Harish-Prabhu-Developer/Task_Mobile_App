@@ -14,49 +14,42 @@ import { IMAGES } from "../../Config";
 import Switch from "../auth/Switch";
 import Profile from "../User/Profile";
 import CustomDeleteAlert from "../alert/CustomDeleteAlert";
-const MENU_ITEMS = [
-  { id: "dashboard", name: "Dashboard", icon: <RiDashboard3Line /> },
-  { id: "projects", name: "Projects", icon: <IoFolderOpenSharp /> },
-  { id: "users", name: "Users", icon: <FaUserPlus /> },
-  {
-    id: "tasks",
-    name: "Tasks",
-    icon: <FaTasks />,
-    subMenu: [
-      {
-        id: "todos-tasks",
-        name: "Todos Tasks",
-        path: "/tasks/todos",
-        icon: <RiTodoFill />,
-      },
-      {
-        id: "in-progress-tasks",
-        name: "In Progress Tasks",
-        path: "/tasks/in-progress",
-        icon: <GrInProgress />,
-      },
-      {
-        id: "completed-tasks",
-        name: "Completed Tasks",
-        path: "/tasks/completed",
-        icon: <MdDone />,
-      },
-    ],
-  },
-];
-
+import { ADMIN_MENU_ITEMS, JUNIOR_AND_SENIOR_MENU_ITEMS, MANAGER_MENU_ITEMS, MENU_ITEMS, USER_MENU_ITEMS } from "./NavMenus";
+import { jwtDecode } from "jwt-decode";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
+  const [userRole, setUserRole] = useState("");
   const linkClasses =
   "flex items-center gap-4 p-3 rounded-lg transition-all duration-300 hover:bg-slate-600 text-white";
   const activeLinkClasses =
     "flex items-center gap-4 p-3 rounded-lg bg-blue-600 text-white";
+  const [decodedToken, setDecodedToken] = useState(null);
+
   useEffect(() => {
-    dispatch(setProfile());
+    const token = localStorage.getItem("token");
+
+    if (token) {
+
+      try {
+        const decoded = jwtDecode(token);
+        console.log(`Decoded UserLevel: ${decoded.userLevel}`);
+        
+        console.log("Decoded Token Data:", decoded);         
+        // Extract first word of userLevel (e.g., "Senior" from "Senior Developer")
+        setUserRole(decoded?.userLevel?.split(" ")[0] || "");
+
+        setDecodedToken(decoded);
+      } catch (error) {
+        console.error("Invalid token:", error);
+        localStorage.removeItem("token"); // Remove invalid token
+        localStorage.removeItem("isLoggedIn");
+      }
+    }
+
+    dispatch(setProfile()); // Fetch user profile on mount
   }, [dispatch]);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -94,20 +87,91 @@ const Sidebar = () => {
 
           {/* Navigation Menu with Role -based Links */}
           <nav className="mt-6 w-full flex flex-col gap-2 px-4">
-            {MENU_ITEMS.map((item) => (
-              <NavLink
-                key={item.id}
-                to={`/${item.id}`}
-                className={({ isActive }) =>
-                  isActive ? activeLinkClasses : linkClasses
-                }
-              >
-                <i className="text-2xl">{item.icon}</i>
-                <span className={`${isOpen ? "block" : "hidden"}`}>
-                  {item.name}
-                </span>
-              </NavLink>
-            ))}
+            {/*Admin nav */}
+            {decodedToken?.userLevel === "Admin" && (
+              ADMIN_MENU_ITEMS.map((item) => (
+                <NavLink
+                  key={item.id}
+                  to={`/${item.id}`}
+                  className={({ isActive }) =>
+                    isActive ? activeLinkClasses : linkClasses
+                  }
+                >
+                  <i className="text-2xl">{item.icon}</i>
+                  <span className={`${isOpen ? "block" : "hidden"}`}>
+                    {item.name}
+                  </span>
+                </NavLink>
+              ))
+            )}
+            {/*Manager nav */}
+            {decodedToken?.userLevel === "Manager" && (
+              MANAGER_MENU_ITEMS.map((item) => (
+                <NavLink
+                  key={item.id}
+                  to={`/${item.id}`}
+                  className={({ isActive }) =>
+                    isActive ? activeLinkClasses : linkClasses
+                  }
+                >
+                  <i className="text-2xl">{item.icon}</i>
+                  <span className={`${isOpen ? "block" : "hidden"}`}>
+                    {item.name}
+                  </span>
+                </NavLink>
+              ))
+            )}
+            {/*User nav */}
+            {decodedToken?.userLevel === "User" && (
+              USER_MENU_ITEMS.map((item) => (
+                <NavLink
+                  key={item.id}
+                  to={`/${item.id}`}
+                  className={({ isActive }) =>
+                    isActive ? activeLinkClasses : linkClasses
+                  }
+                >
+                  <i className="text-2xl">{item.icon}</i>
+                  <span className={`${isOpen ? "block" : "hidden"}`}>
+                    {item.name}
+                  </span>
+                </NavLink>
+              ))
+            )}
+            {/*Junior nav */}
+            {userRole.trim() === "Junior" && (
+              JUNIOR_AND_SENIOR_MENU_ITEMS.map((item) => (
+                <NavLink
+                  key={item.id}
+                  to={`/${item.id}`}
+                  className={({ isActive }) =>
+                    isActive ? activeLinkClasses : linkClasses
+                  }
+                >
+                  <i className="text-2xl">{item.icon}</i>
+                  <span className={`${isOpen ? "block" : "hidden"}`}>
+                    {item.name}
+                  </span>
+                </NavLink>
+              ))
+            )}
+            {/*Senior nav */}
+            {userRole.trim() === "Senior" && (
+              JUNIOR_AND_SENIOR_MENU_ITEMS.map((item) => (
+                <NavLink
+                  key={item.id}
+                  to={`/${item.id}`}
+                  className={({ isActive }) =>
+                    isActive ? activeLinkClasses : linkClasses
+                  }
+                >
+                  <i className="text-2xl">{item.icon}</i>
+                  <span className={`${isOpen ? "block" : "hidden"}`}>
+                    {item.name}
+                  </span>
+                </NavLink>
+              ))
+            )}
           </nav>
 
           {/* Profile Section */}
@@ -123,8 +187,8 @@ const Sidebar = () => {
               />
               {isOpen && (
                 <div className="justify-center">
-                  <h2 className="text-sm text-center font-semibold">{user?.name || "User"}</h2>
-                  <p className="text-xs text-center text-yellow-300">{user?.userLevel?.trim() || "Admin"}</p>
+                    <h2 className="text-sm text-center font-semibold">{user?.name || "User"}</h2>
+                    <p className="text-xs text-center text-yellow-300">{user?.userLevel?.trim() || "Member"}</p>
                 </div>
               )}
             </div>

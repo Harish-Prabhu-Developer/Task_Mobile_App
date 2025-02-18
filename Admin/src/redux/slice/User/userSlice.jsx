@@ -4,38 +4,37 @@ import { CONFIG } from "../../../Config";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 
-// Helper function for API requests
-const apiCall = async (method, url, data = null) => {
-  try {
-    const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
-    const response = await axios({ method, url, data, headers });
-    console.log("API Response:", response.data.message);
-    return response.data;
-  } catch (error) {
-    toast.error("Something went wrong. Please try again.");
-    console.error("API Error:", error.data);
-    throw error.response?.data?.message || "Something went wrong. Please try again.";
-  }
-};
+
+// Set up headers with authentication
+const getHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+});
+;
 
 // Fetch all users
 export const fetchUsers = createAsyncThunk("user/fetchUsers", async (_, { rejectWithValue }) => {
   try {
-    return await apiCall("get", `${CONFIG.BASE_URL}/taskapp/users/all`);
+    const res = await axios.get(`${CONFIG.BASE_URL}/taskapp/users/all`,getHeaders());
+    console.log("getall users Api res :",res.data);
+    return res.data;
   } catch (error) {
-    return rejectWithValue(error);
+    console.error("getall users Api error :",error);
+    return rejectWithValue(error.response?.data?.msg || "Failed to fetch projects");
   }
 });
 
 // Add a new user
 export const addUser = createAsyncThunk("user/addUser", async (userData, { rejectWithValue }) => {
   try {
-    console.log("AddData : ",userData);
-    
-    return await apiCall("post", `${CONFIG.BASE_URL}/taskapp/users/add`, userData);
+    console.log("Add User Data : ",userData);
+    const res = await axios.post(`${CONFIG.BASE_URL}/taskapp/users/add`, userData,getHeaders());
+    console.log("Add a new User Res :",res.data);
+    return res.data;
   } catch (error) {
-    console.error("Add Api:",error.message);
-    return rejectWithValue(error);
+    console.error("Add Api error :",error.message);
+    return rejectWithValue(error.response?.data?.msg || "Failed to fetch projects");
   }
 });
 
@@ -45,19 +44,24 @@ export const editUser = createAsyncThunk("user/updateUser", async ({ id, data },
   console.log("update data",data);
   
   try {
-    return await apiCall("put", `${CONFIG.BASE_URL}/taskapp/users/${id}`, data);
+    const res = await axios.put(`${CONFIG.BASE_URL}/taskapp/users/${id}`, data,getHeaders());
+    console.log("Updated a User Res : ",res.data);
+    return res.data;
   } catch (error) {
-    return rejectWithValue(error);
+    console.error("Update Api error :",error);
+    return rejectWithValue(error.response?.data?.msg || "Failed to fetch projects");
   }
 });
 
 // Delete a user
 export const deleteUser = createAsyncThunk("user/deleteUser", async (id, { rejectWithValue }) => {
   try {
-    await apiCall("delete", `${CONFIG.BASE_URL}/taskapp/users/${id}`);
-    return id;
+    const res = await axios.delete(`${CONFIG.BASE_URL}/taskapp/users/${id}`,getHeaders());
+    console.log("Delete a User Res : ",res.data);
+    return res.data;
   } catch (error) {
-    return rejectWithValue(error);
+    console.error("Deleted Api Error:",error);
+    return rejectWithValue(error.response?.data?.msg || "Failed to fetch projects");
   }
 });
 
@@ -88,11 +92,10 @@ const userSlice = createSlice({
           }
           const decodedToken = jwtDecode(token);
           console.log("Decoded Token Data:", decodedToken);
-          if (action.payload) {
+          if (action.payload.users) {
             // Filter out the logged-in user from the users array
-            state.users = action.payload.filter((user) => user._id !== decodedToken._id)||[];
+            state.users = action.payload.users.filter((user) => user._id !== decodedToken._id)||[];
           }
-
           console.log("Filtered Users:", state.users);
         } catch (error) {
           console.error("Error decoding JWT token:", error);
@@ -110,7 +113,8 @@ const userSlice = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.users.push(action.payload);
+        console.log("Add user action payload:", action.payload.user);
+        state.users.push(action.payload.user);
       })
       .addCase(addUser.rejected, (state, action) => {
         state.status = "failed";
@@ -124,9 +128,9 @@ const userSlice = createSlice({
       })
       .addCase(editUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const index = state.users.findIndex((user) => user.id === action.payload.id);
+        const index = state.users.findIndex((user) => user.id === action.payload.user._id);
         if (index !== -1) {
-          state.users[index] = action.payload;
+          state.users[index] = action.payload.user;
         }
       })
       .addCase(editUser.rejected, (state, action) => {
