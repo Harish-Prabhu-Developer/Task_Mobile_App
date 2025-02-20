@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
 import User from "./pages/User";
@@ -10,7 +10,7 @@ import { InProgressTasks } from "./components/Tasks/InProgressTasks";
 import { CompletedTasks } from "./components/Tasks/CompletedTasks";
 import Login from "./pages/Login";
 import { useDispatch } from "react-redux";
-import { setProfile } from "./redux/slice/auth/authSlice";
+import { logout, setProfile } from "./redux/slice/auth/authSlice";
 import Header from "./components/navigation/Header";
 import { jwtDecode } from "jwt-decode";
 import CustomLoading from "./components/CustomComponent/CustomLoading";
@@ -51,6 +51,7 @@ const Layout = () => {
 // ✅ Main App Component
 const App = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [decodedToken, setDecodedToken] = useState(null);
   const [userRole, setUserRole] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -72,8 +73,8 @@ const App = () => {
           setDecodedToken(decoded);
         } catch (error) {
           console.error("Invalid token:", error);
-          localStorage.removeItem("token");
-          localStorage.removeItem("isLoggedIn");
+          dispatch(logout());
+          navigate("/login", { replace: true });
           setIsLoggedIn(false);
         }
       }

@@ -166,3 +166,26 @@ export const changeTFA = async (req, res) => {
         res.status(500).json({ status: "fail", msg: "Internal server error", error: error.message });
     }
 };
+
+//updated profile
+export const updateProfile = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { name, tfa, phone } = req.body;
+
+        const updatedProfile = await Users.findOneAndUpdate(
+            { _id: userId },
+            { name, tfa, phone },
+            { new: true }
+        );
+
+        if (!updatedProfile) {
+            return res.status(404).json({ status: "fail", msg: "User not found" });
+        }
+
+        res.status(200).json({ status: "success", msg: "Profile updated successfully", user: updatedProfile });
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ status: "fail", msg: "Internal server error", error: error.message });
+    }
+};

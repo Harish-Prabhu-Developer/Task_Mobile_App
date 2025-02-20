@@ -114,7 +114,7 @@ const Project = () => {
         onOpen={isAddProjectOpen}
       />
 
-      <div className="p-6 md:p-2 w-full space-y-6 bg-slate-100 min-h-screen scrollbar-hide">
+      <div className="p-1 mt-12 sm:mt-0 w-full space-y-6 bg-slate-100 min-h-screen scrollbar-hide">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
@@ -251,7 +251,7 @@ const Project = () => {
                     <th className="p-4 text-md text-left">Team Members</th>
                     <th className="p-4 text-md text-left">Due Date</th>
                     <th className="p-4 text-md text-left">Status</th>
-                    <th className={`p-4 text-center text-md  ${Decodetoken.userLevel==="Admin"|| Decodetoken.userLevel==="Manager"?"":"hidden"}`}>Actions</th>
+                    <th className={`px-6 py-3  text-center text-md  ${Decodetoken.userLevel==="Admin"|| Decodetoken.userLevel==="Manager"?"":"hidden"}`}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>

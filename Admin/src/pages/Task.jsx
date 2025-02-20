@@ -1,15 +1,30 @@
 import { jwtDecode } from 'jwt-decode';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaList, FaPlus, FaTh } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchtasks } from '../redux/slice/AssignTask/AssignTaskSlice';
 
 const Task = () => {
     const [view, setView] = useState("board");
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+      const getTasks = async () => {
+        await dispatch(fetchtasks());
+      };
+      getTasks();
+    }, [dispatch]);
+  
+    const projectData = useSelector((state) => state.project.projects);
+  
+
+
     // Handle missing token
     const token = localStorage.getItem("token");
     const Decodetoken = token ? jwtDecode(token) : {};
   return (
     <>
-      <div className="p-6 md:p-2 w-full space-y-6 bg-slate-100 min-h-screen scrollbar-hide">
+      <div className="p-1 mt-12 sm:mt-0 w-full space-y-6 bg-slate-100 min-h-screen scrollbar-hide">
               {/* Header */}
               <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
@@ -85,7 +100,7 @@ const Task = () => {
                   <table className="w-full border-collapse">
                       <thead className="bg-yellow-200 text-gray-700 text-left">
                         <tr>
-                          <th className='p-4 text-md text-left'>Task title</th>
+                          <th className='p-4 text-md text-left'>Task Title</th>
                           <th className="p-4 text-md text-left">Project Name</th>
                           <th className="p-4 text-md text-left">Team</th>
                           <th className="p-4 text-md text-left">Due Date</th>

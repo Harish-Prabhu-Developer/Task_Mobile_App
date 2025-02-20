@@ -122,42 +122,42 @@ const AddProject = ({ closeAddProjectDialog, projectToEdit, onSubmit, onOpen }) 
               <div>
                 <label className="block text-gray-900 font-semibold mb-1">Team Members</label>
                 <Select
-  isMulti
-  options={users.map((user) => ({
-    value: user._id,
-    label: (
-      <div className="flex items-center space-x-2">
-        {logowithname(user.name,"w-7 h-7")}
-        <span className="text-gray-700">{user.name}</span>
-      </div>
-    ),
-  }))}
+                    isMulti
+                    options={users.map((user) => ({
+                      value: user._id,
+                      label: (
+                        <div className="flex items-center space-x-2">
+                          {logowithname(user.name,"w-7 h-7")}
+                          <span className="text-gray-700">{user.name}</span>
+                        </div>
+                      ),
+                    }))}
 
-  value={formData.teamMembers
-    .map((memberId) => {
-      const user = users.find((u) => u._id === memberId);
-      return user
-        ? {
-            value: user._id,
-            label: (
-              <div className="flex items-center space-x-2">
-                {logowithname(user.name,"w-7 h-7")}
-                <span className="text-gray-700">{user.name}</span>
-              </div>
-            ),
-          }
-        : null;
-    })
-    .filter(Boolean)} // Removes null values
+                    value={formData.teamMembers
+                      .map((memberId) => {
+                        const user = users.find((u) => u._id === memberId);
+                        return user
+                          ? {
+                              value: user._id,
+                              label: (
+                                <div className="flex items-center space-x-2">
+                                  {logowithname(user.name,"w-7 h-7")}
+                                  <span className="text-gray-700">{user.name}</span>
+                                </div>
+                              ),
+                            }
+                          : null;
+                      })
+                      .filter(Boolean)} // Removes null values
 
-  onChange={(selectedOptions) =>
-    setFormData((prev) => ({
-      ...prev,
-      teamMembers: selectedOptions ? selectedOptions.map((option) => option.value) : [],
-    }))
-  }
-  className="w-full"
-/>
+                    onChange={(selectedOptions) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        teamMembers: selectedOptions ? selectedOptions.map((option) => option.value) : [],
+                      }))
+                    }
+                    className="w-full"
+                  />
 
               </div>
               {/* Status Dropdown */}

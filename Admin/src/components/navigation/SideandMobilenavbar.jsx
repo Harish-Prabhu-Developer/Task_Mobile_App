@@ -1,13 +1,8 @@
 //SideandMobilenavbar.jsx
 import React, { useEffect, useState } from "react";
-import { RiDashboard3Line } from "react-icons/ri";
-import { FaUserPlus, FaTasks, FaUserCircle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ImMenu } from "react-icons/im";
-import { MdDone, MdEdit } from "react-icons/md";
-import { RiTodoFill } from "react-icons/ri";
-import { GrInProgress } from "react-icons/gr";
-import { IoFolderOpenSharp, IoLogOut, IoClose } from "react-icons/io5";
+import {IoLogOut, IoClose } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, setProfile } from "../../redux/slice/auth/authSlice";
 import { IMAGES } from "../../Config";
@@ -44,8 +39,8 @@ const Sidebar = () => {
         setDecodedToken(decoded);
       } catch (error) {
         console.error("Invalid token:", error);
-        localStorage.removeItem("token"); // Remove invalid token
-        localStorage.removeItem("isLoggedIn");
+        dispatch(logout());
+        navigate("/login", { replace: true });
       }
     }
 
