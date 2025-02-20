@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js'; // Import CryptoJS
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../redux/slice/auth/authSlice';
+import { loginUser, setProfile } from '../../redux/slice/auth/authSlice';
 import { setemail } from '../../redux/slice/auth/emailSlice';
 
 const LoginForm = ({ onForgetPassword, onLoginSuccess }) => {
@@ -103,6 +103,7 @@ const LoginForm = ({ onForgetPassword, onLoginSuccess }) => {
     if (OnLoginStatus === "Login success") {
       console.log("Login success, navigating to dashboard...");
       navigate('/dashboard');
+      dispatch(setProfile());
     }
   };
 
