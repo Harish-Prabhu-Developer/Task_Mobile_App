@@ -2,11 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./src/Config/db.js";
-import authRouter from "./src/Route/authRoute.js";
-import UserRouter from "./src/Route/userRoute.js";
-import ProjectRouter from "./src/Route/projectRoute.js";
-import TaskRouter from "./src/Route/taskRoute.js";
 import path from "path";
+import Router from "./src/Route/index.js";
 
 dotenv.config();
 const app = express();
@@ -14,18 +11,15 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
-
-
+  
+app.use("/taskapp",Router)
 
 // ✅ Serve uploaded files statically
-app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
+app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
 
 app.get("/", (req, res) => res.status(200).json("Welcome to TaskApp!"));
 
-app.use("/taskapp/auth", authRouter);
-app.use("/taskapp/users",UserRouter);
-app.use("/taskapp/projects",ProjectRouter);
-app.use("/taskapp/tasks",TaskRouter);
+
 
 connectDB()
   .then(() => {

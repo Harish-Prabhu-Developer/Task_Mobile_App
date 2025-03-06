@@ -14,6 +14,7 @@ import { logout, setProfile } from "./redux/slice/auth/authSlice";
 import Header from "./components/navigation/Header";
 import { jwtDecode } from "jwt-decode";
 import CustomLoading from "./components/CustomComponent/CustomLoading";
+import TaskDetails from "./pages/TaskDetails";
 
 // ✅ Protected Route Component
 const ProtectedRoute = () => {
@@ -31,7 +32,7 @@ const Layout = () => {
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
-          <div className="flex-1 bg-slate-100 p-4 overflow-auto">
+          <div className="flex-1 bg-slate-100 p-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300">
             <Outlet />
           </div>
         </div>
@@ -40,13 +41,15 @@ const Layout = () => {
       {/* Mobile Navbar for Small Screens */}
       <div className="sm:hidden w-screen h-screen flex flex-col">
         <Mobilenavbar />
-        <div className="flex-1 overflow-auto p-4 bg-slate-100">
+        <div className="flex-1 overflow-auto p-4 bg-slate-100 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300">
           <Outlet />
         </div>
       </div>
     </div>
   );
 };
+
+
 
 // ✅ Main App Component
 const App = () => {
@@ -113,6 +116,7 @@ const App = () => {
             <Route path="in-progress" element={<InProgressTasks />} />
             <Route path="completed" element={<CompletedTasks />} />
           </Route>
+          <Route path="/task/:id" element={<TaskDetails />} />
         </Route>
       </Route>
 

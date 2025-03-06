@@ -12,6 +12,8 @@ import {
 import { toast } from "react-toastify";
 import { getInitials, getUniqueColor, logowithname } from "../components/utils/logoIntoName";
 import { MdDelete, MdModeEditOutline } from "react-icons/md";
+import { formatDate, PROJECT_TYPE } from "../components/utils";
+import UserInfo from "../components/User/UserInfo";
 
 const Project = () => {
   const [view, setView] = useState("board");
@@ -196,16 +198,7 @@ const Project = () => {
                   <div className="text-sm flex flex-row items-center justify-start text-gray-600 mt-2">
                     <strong className="font-semibold">Due Date: </strong>
                     <span className="ml-1">
-                      {project.endDate
-                        ? new Date(project.endDate).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "2-digit",
-                              day: "2-digit",
-                              year: "numeric",
-                            }
-                          )
-                        : "N/A"}
+                      {formatDate(new Date(project.endDate))}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
@@ -220,14 +213,8 @@ const Project = () => {
 
                   {/* Styled Status Tag */}
                   <span
-                    className={`mt-4 inline-block px-4 py-1 text-xs font-bold rounded-full transition-all
-              ${
-                project.status === "In Progress"
-                  ?"bg-yellow-500 text-white"
-                  : project.status === "Not Started"
-                  ?  "bg-blue-500 text-white" 
-                  : "bg-green-500 text-white"
-              }`}
+                    className={`mt-4 inline-block text-white px-4 py-1 text-xs font-bold rounded-full transition-all
+              ${PROJECT_TYPE[project.status]} }`}
                   >
                     {project.status}
                   </span>
@@ -268,8 +255,11 @@ const Project = () => {
                         {project.teamMembers.length > 0 ? (
                           <div className="flex items-center space-x-1">
                             {project.teamMembers.slice(0, 4).map((member, index) => (
-                              <div key={index} className="flex items-center">
-                                {logowithname(member.name,"w-7 text-sm h-7")}
+                              <div
+                                key={index}
+                                className={`w-7 h-7 rounded-full  text-white flex items-center -translate-y-50 font-bold justify-center text-xs -mr-1 ${getUniqueColor(member.name)}`}
+                              >
+                                <UserInfo user={member} styles={"transform -translate-x-[-10%] -translate-y-[95%]"} />
                               </div>
                             ))}
                             {project.teamMembers.length > 4 && (
@@ -282,27 +272,12 @@ const Project = () => {
                       </td>
 
                       <td className="p-4">
-                        {project.endDate
-                          ? new Date(project.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "2-digit",
-                                day: "2-digit",
-                                year: "numeric",
-                              }
-                            )
-                          : "N/A"}
+                        {formatDate(new Date(project.endDate))}
                       </td>
                       <td className="p-2">
                         <span
-                          className={`inline-block px-4 py-1 text-xs font-bold rounded-full transition-all
-                  ${
-                    project.status === "In Progress"
-                      ? "bg-yellow-500 text-white" 
-                      : project.status === "Not Started"
-                      ? "bg-blue-500 text-white"
-                      : "bg-green-500 text-white"
-                  }`}
+                          className={`inline-block text-white px-4 py-1 text-xs font-bold rounded-full transition-all
+                  ${PROJECT_TYPE[project.status]}`}
                         >
                           {project.status}
                         </span>

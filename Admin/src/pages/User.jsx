@@ -15,7 +15,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { logowithname } from "../components/utils/logoIntoName";
+import { getUniqueColor, logowithname } from "../components/utils/logoIntoName";
+import UserInfo from "../components/User/UserInfo";
 
 const User = () => {
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
@@ -178,7 +179,11 @@ const User = () => {
                 className="p-4 bg-white rounded-lg shadow-lg border border-gray-200 w-full"
               >
                 <div className="flex items-center space-x-4">
-                  <div>{logowithname(user.name, "w-10 h-10")}</div>
+                  <div className={`w-7 h-7 rounded-full text-white flex items-center justify-center text-sm -mr-1
+                  ${getUniqueColor(user.name)}`}
+            >
+              <UserInfo user={user} />
+            </div>
                   <div className="flex-1">
                     <h2 className="text-lg font-medium text-gray-800 break-words">
                       {user.name}
@@ -288,7 +293,11 @@ const User = () => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex flex-row gap-2 items-center">
-                        <div>{logowithname(user.name, "w-10 h-10")}</div>
+                  <div className={`w-10 h-10 rounded-full text-white flex items-center justify-center text-sm -mr-1
+                  ${getUniqueColor(user.name)}`}
+            >
+              <UserInfo user={user} styles={"transform -translate-x-[-10%] -translate-y-[95%]"} />
+            </div>
                         <p className="text-gray-600">{user.name}</p>
                       </div>
                     </td>

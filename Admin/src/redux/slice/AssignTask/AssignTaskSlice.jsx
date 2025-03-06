@@ -90,7 +90,7 @@ export const deleteTask = createAsyncThunk(
     name: "assignTask",
     initialState: {
       tasks: [],
-      task:'',
+      task:null,
       status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
       error: null,
     },
@@ -108,7 +108,6 @@ export const deleteTask = createAsyncThunk(
           state.status = "failed";
           state.error = action.payload;
         })
-
         .addCase(fetchtaskById.pending, (state) => {
           state.status = "loading";
         })
@@ -119,7 +118,45 @@ export const deleteTask = createAsyncThunk(
         .addCase(fetchtaskById.rejected, (state, action) => {
             state.status = "failed";
             state.error = action.payload;
-            });
+        })
+        .addCase(newTask.pending, (state) => {
+          state.status = "loading";
+        })
+        .addCase(newTask.fulfilled, (state, action) => {
+          state.status = "succeeded";
+          state.tasks.push(action.payload);
+        })
+        .addCase(newTask.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.payload;
+        })
+        .addCase(updateTask.pending, (state) => {
+          state.status = "loading";
+        })
+        .addCase(updateTask.fulfilled, (state, action) => {
+          state.status = "succeeded";
+          const updatedTask = action.payload;
+          const index = state.tasks.findIndex((task) => task._id === updatedTask._id);
+          if (index !== -1) {
+            state.tasks[index] = updatedTask;
+          }
+        })
+        .addCase(updateTask.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.payload;
+        })
+        .addCase(deleteTask.pending, (state) => {
+          state.status = "loading";
+        })
+        .addCase(deleteTask.fulfilled, (state, action) => {
+          state.status = "succeeded";
+          const deletedTaskId = action.payload;
+          state.tasks = state.tasks.filter((task) => task._id !== deletedTaskId);
+        })
+        .addCase(deleteTask.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.payload;
+        });
     },
   });
 

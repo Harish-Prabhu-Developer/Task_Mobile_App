@@ -1,10 +1,13 @@
 //projectController.js
 import ProjectModel from "../Model/ProjectModel.js";
+import UserModel from "../Model/UserModel.js";
+import ActivitiesModel from "../Model/ActivitiesModel.js";
+import TaskModel from "../Model/TaskModel.js";
 
 // Create a new project
 export const createProject = async (req, res) => {
   try {
-    const { name, description, startDate, endDate,teamMembers } = req.body;
+    const { name, description, startDate, endDate } = req.body;
 
     // Validate required fields
     if (!name || !description || !startDate || !endDate) {
@@ -17,7 +20,6 @@ export const createProject = async (req, res) => {
       description,
       startDate,
       endDate,
-      teamMembers,
       createdBy: req.user._id, // Assuming the user ID is available in req.user
     });
 
@@ -36,7 +38,8 @@ export const getProject = async (req, res) => {
     const project = await ProjectModel.findById(projectId)
       .populate("createdBy", "name email")
       .populate("updatedBy", "name email")
-      .populate("teamMembers","name email role subRole");
+      .populate("teamMembers","name email role subRole")
+      .populate("tasks");
 
     if (!project) {
       return res.status(404).json({status:'fail', msg: "Project not found" });
@@ -55,7 +58,8 @@ export const getAllProjects = async (req, res) => {
     const projects = await ProjectModel.find()
       .populate("createdBy", "name email")
       .populate("updatedBy", "name email")
-      .populate("teamMembers","name email role subRole");
+      .populate("teamMembers","name email role subRole")
+      .populate("tasks");
 
     res.status(200).json(projects);
   } catch (error) {
@@ -67,16 +71,17 @@ export const getAllProjects = async (req, res) => {
 export const updateProject = async (req, res) => {
   try {
     const projectId = req.params.id;
-    const { name, description, startDate, endDate,status,teamMembers } = req.body;
+    const { name, description, startDate, endDate,status } = req.body;
 
     // Find the project and update it
     const updatedProject = await ProjectModel.findByIdAndUpdate(
       projectId,
-      { name, description, startDate, endDate,status,teamMembers,updatedBy: req.user._id },
+      { name, description, startDate, endDate,status,updatedBy: req.user._id },
       { new: true } // Return the updated project
     ).populate("createdBy", "name email")
-     .populate("updatedBy", "name email")
-     .populate("teamMembers","name email role subRole");
+      .populate("updatedBy", "name email")
+      .populate("teamMembers","name email role subRole")
+      .populate("tasks");
 
     if (!updatedProject) {
       return res.status(404).json({ status:'fail',msg: "Project not found" });

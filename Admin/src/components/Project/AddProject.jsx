@@ -78,7 +78,7 @@ const AddProject = ({ closeAddProjectDialog, projectToEdit, onSubmit, onOpen }) 
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-5 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold text-gray-800">
+              <h2 className="text-lg font-bold text-gray-800 uppercase">
                 {projectToEdit ? "Edit Project" : "Add New Project"}
               </h2>
               <button
@@ -104,7 +104,6 @@ const AddProject = ({ closeAddProjectDialog, projectToEdit, onSubmit, onOpen }) 
                   required
                 />
               </div>
-
               {/* Description */}
               <div>
                 <label className="block text-gray-900 font-semibold mb-1">Project Description</label>

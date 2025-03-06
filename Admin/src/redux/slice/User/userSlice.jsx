@@ -33,7 +33,7 @@ export const addUser = createAsyncThunk("user/addUser", async (userData, { rejec
     console.log("Add a new User Res :",res.data);
     return res.data;
   } catch (error) {
-    console.error("Add Api error :",error.message);
+    console.error("Add Api error :",error);
     return rejectWithValue(error.response?.data?.msg || "Failed to fetch projects");
   }
 });
@@ -118,7 +118,7 @@ const userSlice = createSlice({
       })
       .addCase(addUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
+        state.error = action.payload.msg;
       })
 
       // Edit User

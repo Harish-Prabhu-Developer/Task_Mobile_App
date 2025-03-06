@@ -1,23 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const commentSchema = new mongoose.Schema({
-  task: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Task',
-    required: true,
+const commentSchema = new Schema(
+  {
+    task: { type: Schema.Types.ObjectId, ref: "Task", required: true },
+    commentedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    text: { type: String, required: true },
+    date: { type: Date, default: Date.now },
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  comment: {
-    type: String,
-    required: true,
-  },
-},
-{
-    timestamps:true,
-});
+  { timestamps: true }
+);
 
-export default mongoose.model('Comment', commentSchema);
+export default mongoose.model("Comment", commentSchema);

@@ -10,11 +10,11 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  assignedTo: {
+  assignedTo: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-  },
+  }],
   priority: {
     type: String,
     default: "normal",
@@ -27,21 +27,8 @@ const taskSchema = new mongoose.Schema({
   },
   activities: [
     {
-      type: {
-        type: String,
-        default: "assigned",
-        enum: [
-          "assigned",
-          "started",
-          "in progress",
-          "bug",
-          "completed",
-          "commented",
-        ],
-      },
-      activity: String,
-      date: { type: Date, default: Date.now },
-      by: { type: Schema.Types.ObjectId, ref: "User" },
+      type: Schema.Types.ObjectId,
+      ref: "Activity",
     },
   ],
 
@@ -64,6 +51,8 @@ const taskSchema = new mongoose.Schema({
     required: true,
   },
 
+  logs: [{ type: Schema.Types.ObjectId, ref: "Log" }], // Link to logs
+  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], // Link to comments
 },
 {
     timestamps:true,

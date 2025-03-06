@@ -1,5 +1,7 @@
+//userController.js
 import User from "../Model/UserModel.js";
 import bcrypt from "bcryptjs";
+import TaskModel from "../Model/TaskModel.js";
 
 
 // Add User
@@ -21,35 +23,57 @@ export const addUser = async (req, res) => {
 
     res.status(201).json({status:'success', msg: "User created successfully", user: newUser });
   } catch (error) {
-    return res.status(505).json({msg:error});
+    console.error("Error in addUser", error.message);
+    return res.status(505).json({msg:error.message});
   }
 };
 
 // Get All Users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().populate("createdBy", "name email");
+    const users = await User.find()
+      .populate("createdBy", "name email")
+      .populate("tasks");
+
     if (users.length === 0) {
-      return res.status(404).json({status:'fail', msg: "No users found" });
+      return res.status(404).json({ status: "fail", msg: "No users found" });
     }
-    res.status(200).json({status:'success',users});
+
+    // Modify subRole if it's null
+    const modifiedUsers = users.map((user) => ({
+      ...user.toObject(),
+      subRole: user.subRole || "",
+    }));
+
+    res.status(200).json({ status: "success", users: modifiedUsers });
   } catch (error) {
-    return res.status(505).json({msg:error});
+    return res.status(505).json({ msg: error.message });
   }
 };
 
 // Get User
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).populate("createdBy", "name email");
+    const user = await User.findById(req.params.id)
+      .populate("createdBy", "name email")
+      .populate("tasks");
+
     if (!user) {
-      return res.status(404).json({ status:'fail',msg: "User not found" });
+      return res.status(404).json({ status: "fail", msg: "User not found" });
     }
-    res.status(200).json({status:'success',user});
+
+    // Modify subRole if it's null
+    const modifiedUser = {
+      ...user.toObject(),
+      subRole: user.subRole || "",
+    };
+
+    res.status(200).json({ status: "success", user: modifiedUser });
   } catch (error) {
-    return res.status(505).json({msg:error});
+    return res.status(505).json({ msg: error.message });
   }
 };
+
 
 // Update User
 export const updateUser = async (req, res) => {
