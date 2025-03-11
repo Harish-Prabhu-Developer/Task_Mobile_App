@@ -5,6 +5,10 @@ import { FaArrowsToDot } from "react-icons/fa6";
 import { LuClipboardList } from "react-icons/lu";
 import { FaHourglassStart, FaProjectDiagram, FaCheckCircle } from "react-icons/fa"; // Added Project Icons
 import PriorityChart from '../components/Charts/PriorityChart';
+import ProjectProgressChart from '../components/Charts/ProjectProgressChart';
+import TaskDueCompletedChart from '../components/Charts/TaskDueCompletedChart';
+import TaskCompletionByTeamChart from '../components/Charts/TaskCompletionByTeamChart';
+import TaskStatusChart from '../components/Charts/TaskStatusChart';
 
 const Dashboard = () => {
   // Task Stats
@@ -38,7 +42,7 @@ const Dashboard = () => {
   );
 
   return (
-    <div className='p-5'>
+    <div className='p-2 mt-10 md:mt-0'>
       {/* Task Overview Section */}
       <div className='mb-8'>
         <h1 className='text-2xl font-bold mb-4'>Task Overview</h1>
@@ -50,10 +54,34 @@ const Dashboard = () => {
       </div>
     {/* Priority Chart Section */}
     <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
-        <h4 className='text-xl text-gray-600 font-semibold'>
+        <h4 className='text-xl text-gray-600 font-semibold mb-4'>
           Chart by Priority
         </h4>
         <PriorityChart/>
+      </div>
+
+    {/* Task Status Chart Section */}
+    <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
+        <h4 className='text-xl text-gray-600 font-semibold mb-4'>
+          Chart by Task Status
+        </h4>
+        <TaskStatusChart/>
+      </div>
+
+    {/* Task Due vs Completed Chart Section */}
+    <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
+        <h4 className='text-xl text-gray-600 font-semibold mb-4'>
+          Chart by Task Due vs Completed
+        </h4>
+        <TaskDueCompletedChart/>
+      </div>
+
+    {/* Task Completion By Team Chart Section */}
+    <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
+        <h4 className='text-xl text-gray-600 font-semibold mb-4'>
+          Chart by Task Completion By Team
+        </h4>
+        <TaskCompletionByTeamChart/>
       </div>
 
    {/* Project Overview Section */}
@@ -65,6 +93,16 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+
+    {/* Project Progress Chart Section */}
+    <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
+        <h4 className='text-xl text-gray-600 font-semibold mb-4'>
+          Chart by Project Progress
+        </h4>
+        <ProjectProgressChart/>
+      </div>
+
+
     </div>
   );
 };

@@ -9,6 +9,8 @@ import ChangePassDialog from "../User/ChangePassDialog";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomDeleteAlert from "../alert/CustomDeleteAlert";
+import NotificationPanel from "../alert/NotificationPanel";
+import ProfileAvatar from "../User/ProfileAvatar";
 
 const Header = () => {
   const [profileDialog, setProfileDialog] = useState(false);
@@ -70,7 +72,7 @@ const Header = () => {
             onOpen={ConfirmLogDialog}
             onDelete={handleLogout}
             onCancel={() => setConfirmLogDialog(false)}/>
-      <header className="w-full bg-gradient-to-l from-cyan-950 to-blue-800 p-4 shadow-md flex justify-between items-center">
+      <header className="w-full bg-gradient-to-l from-cyan-950 to-blue-800 p-2 shadow-md flex justify-between items-center">
         {/* Search Bar */}
         <div className="flex items-center gap-4">
           <div className="p-2 rounded-lg border border-gray-300 flex items-center bg-white">
@@ -83,14 +85,16 @@ const Header = () => {
           </div>
         </div>
 
+
+
         {/* Profile Dropdown */}
-        <div className="relative">
-          <img
-            src={IMAGES.profileImage}
-            alt="Profile"
-            className="w-10 h-10 rounded-full border-2 border-white cursor-pointer"
-            onClick={() => setShowDialog(!showDialog)}
-          />
+        <div className="relative flex flex-row justify-between gap-4 items-center">
+        <div >
+        <NotificationPanel styles={`text-4xl mt-3`}/>
+        </div>
+        <div>
+         <ProfileAvatar  styles={`w-9 h-9 `}/>
+        </div>
           <ShowProfileDialog
             show={showDialog}
             handleLogout={handleConfirmLogout}

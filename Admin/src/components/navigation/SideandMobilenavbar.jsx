@@ -11,6 +11,8 @@ import Profile from "../User/Profile";
 import CustomDeleteAlert from "../alert/CustomDeleteAlert";
 import { ADMIN_MENU_ITEMS, JUNIOR_AND_SENIOR_MENU_ITEMS, MANAGER_MENU_ITEMS, MENU_ITEMS, USER_MENU_ITEMS } from "./NavMenus";
 import { jwtDecode } from "jwt-decode";
+import NotificationPanel from "../alert/NotificationPanel";
+import ProfileAvatar from "../User/ProfileAvatar";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -219,10 +221,10 @@ const Mobilenavbar = () => {
   };
   return (
     <>
-      <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-2 text-white shadow-md w-full fixed top-0">
+      <div className="flex justify-between items-center bg-gradient-to-r from-cyan-950 to-blue-800 p-1 text-white shadow-md w-full fixed top-0">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="text-2xl block sm:hidden focus:outline-none"
+          className="text-2xl ml-1 block sm:hidden focus:outline-none"
         >
           {isMenuOpen ? <IoClose /> : <ImMenu />}
         </button>
@@ -236,16 +238,15 @@ const Mobilenavbar = () => {
           <h1 className="text-lg font-bold">SWOMB</h1>
         </div>
 
-        <button
-          className="ml-4 cursor-pointer"
-          onClick={() => setIsProfileOpen(!isProfileOpen)}
-        >
-          <img
-            src={IMAGES.profileImage}
-            alt="Profile"
-            className="w-10 h-10 rounded-full border-2 border-white"
-          />
-        </button>
+        <div className="flex flex-row justify-between gap-2">
+          <div>
+          <NotificationPanel styles={`text-2xl mt-3`} />
+          </div>
+          <div>
+            <ProfileAvatar  styles={`w-8 h-8 mt-1.5 mr-1`}/>
+          </div>
+        </div>
+
       </div>
 
       {isMenuOpen && (

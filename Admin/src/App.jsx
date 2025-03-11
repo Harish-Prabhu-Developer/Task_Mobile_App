@@ -32,7 +32,7 @@ const Layout = () => {
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
-          <div className="flex-1 bg-slate-100 p-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300">
+          <div className="flex-1 transition-all duration-200 bg-slate-100 p-4 overflow-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300">
             <Outlet />
           </div>
         </div>
