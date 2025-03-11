@@ -12,18 +12,20 @@ import {  formatDate, ICONS, PRIOTITYSTYELS,  TASK_TYPE } from "../utils";
 import { FaList } from "react-icons/fa";
 import { BiCalendarAlt, BiMessageAltDetail } from "react-icons/bi";
 import { IoMdAdd } from "react-icons/io";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUniqueColor } from "../utils/logoIntoName";
 import AddSubTask from "./AddSubTask";
 import UserInfo from "../User/UserInfo";
 import { useNavigate } from "react-router-dom";
+import { updateTask } from "../../redux/slice/AssignTask/AssignTaskSlice";
 const TaskCard = ({ task }) => {
   const navigate = useNavigate();
   const users = useSelector((state) => state.user.users);
   const [isAddSubTaskOpen, setIsAddSubTaskOpen] = useState(false);
   const [SubTasksToEdit, setSubTasksToEdit] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-
+  const dispatch = useDispatch();
+  
 
   const latestSubTask = task?.subTasks?.length
     ? task.subTasks.reduce((latest, current) =>
@@ -43,6 +45,7 @@ const TaskCard = ({ task }) => {
 
   const handleSubTaskSubmit = (SubTaskdata) => {
     console.log("SubTask Data:", SubTaskdata);
+     
     closeAddSubTasksDialog();
   };
 
@@ -56,7 +59,8 @@ const TaskCard = ({ task }) => {
       />
 
       <div className="bg-white shadow-lg border-gray-400 border-spacing-48 rounded-lg p-4"
-            onClick={()=>navigate(`/task/${task._id}`,{ state: { task } })}>
+            onClick={()=>navigate(`/task/${task._id}`,{ state: { task } })}
+            >
         {/* Task Priority */}
         <div className="flex flex-row items-center justify-between">
           <div
@@ -132,12 +136,12 @@ const TaskCard = ({ task }) => {
 
           {/* Assigned Users */}
           <div className="flex flex-row-reverse">
-            {task?.assignedTo?.map((m, index) => (
+            {task?.assignedTo?.map((user, index) => (
               <div
                 key={index}
-                className={`w-7 h-7 rounded-full text-white flex items-center font-bold justify-center text-xs -mr-1 ${getUniqueColor(m.name)}`}
+                className={`w-7 h-7 rounded-full text-white flex items-center font-bold justify-center text-xs -mr-1 ${getUniqueColor(user.name)}`}
               >
-                <UserInfo user={m} styles={"transform -translate-x-1/2"} />
+                <UserInfo user={user} styles={"transform -translate-x-[90%] -translate-y-[125%] "} />
               </div>
             ))}
           </div>

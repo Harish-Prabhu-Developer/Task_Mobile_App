@@ -59,6 +59,8 @@ export const newTask = createAsyncThunk(
 export const updateTask = createAsyncThunk(
     "tasks/update",
     async ({ taskId, taskData }, { rejectWithValue }) => {
+      console.log("tasks/update Id: ",taskId);
+      console.log("tasks/update Data: ",taskData);
       try {
         const response = await axios.put(`${CONFIG.BASE_URL}/taskapp/tasks/update/${taskId}`, taskData, getHeaders());
         console.log("Tasks update Response:", response.data);

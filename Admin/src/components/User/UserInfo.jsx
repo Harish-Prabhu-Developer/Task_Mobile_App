@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { getInitials } from "../utils";
+import { getInitials, GETROLE } from "../utils";
 import { getUniqueColor } from "../utils/logoIntoName";
 
 const UserInfo = ({ user,styles }) => {
@@ -39,7 +39,7 @@ const UserInfo = ({ user,styles }) => {
             </div>
             <div className="flex flex-col gap-y-1">
               <p className="text-black text-xl font-bold">{user?.name}</p>
-              <span className="text-base text-gray-500">{user?.userLevel||user?.role+" "+user?.subRole}</span>
+              <span className="text-base text-gray-500">{GETROLE(user)}</span>
               <span className="text-blue-500">
                 {user?.email ?? "email@example.com"}
               </span>

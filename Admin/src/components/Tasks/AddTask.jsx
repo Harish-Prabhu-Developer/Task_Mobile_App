@@ -55,13 +55,13 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
 
   useEffect(() => {
     if (TasksToEdit) {
-      console.log("TasksToEdit:", TasksToEdit);
+      console.log("Editing Task:", TasksToEdit);
       
       setFormData({
         title: TasksToEdit.title || "",
         description: TasksToEdit.description || "",
-        project:TasksToEdit.project || "",
-        assignedTo: TasksToEdit.assignedTo.map((member) => member._id) || [],
+        project: TasksToEdit.project?._id || "", // Ensure we store only the ID
+        assignedTo: TasksToEdit.assignedTo ? TasksToEdit.assignedTo.map((user) => user._id) : [],
         dueDate: TasksToEdit.dueDate ? TasksToEdit.dueDate.split("T")[0] : "",
         priority: TasksToEdit.priority || "normal",
         stage: TasksToEdit.stage || "todo",
@@ -69,6 +69,7 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
       });
     }
   }, [TasksToEdit]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,7 +88,7 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
       console.log("Uploaded Files:", fileArray);
       setFormData((prev) => ({
         ...prev,
-        assets: [...prev.assets, ...fileArray],
+        assets: [...prev.assets, ...fileArray.map((file) => file.path)],
       }));
       fileInputRef.current.value = null;
     }
@@ -95,9 +96,16 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+  
+    if (TasksToEdit) {
+      // Updating an existing task
+      onSubmit({ ...TasksToEdit, ...formData });
+    } else {
+      // Creating a new task
+      onSubmit(formData);
+    }
   };
-
+  
   return (
     <>
       {onOpen && (
@@ -163,29 +171,27 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
       </div>
     ),
   }))}
-
-  value={
-    projects
-      .filter((p) => p._id === formData.project) // Select only the current project
-      .map((p) => ({
-        value: p._id,
-        label: (
-          <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-full bg-blue-800 font-bold text-white text-xs flex items-center justify-center">{getInitials(p.name)}</div>
-            <span className="text-gray-700 ">{p.name}</span>
+  value={projects
+    .filter((p) => p._id === formData.project)
+    .map((p) => ({
+      value: p._id,
+      label: (
+        <div className="flex items-center space-x-2">
+          <div className="w-7 h-7 rounded-full bg-blue-800 font-bold text-white text-xs flex items-center justify-center">
+            {getInitials(p.name)}
           </div>
-        ),
-      }))[0] || null // Ensure it's not an array
-  }
-
+          <span className="text-gray-700">{p.name}</span>
+        </div>
+      ),
+    }))[0] || null}
   onChange={(selectedOption) =>
     setFormData((prev) => ({
       ...prev,
-      project: selectedOption ? selectedOption.value : "", // Store only one project ID
+      project: selectedOption ? selectedOption.value : "",
     }))
   }
-  className="w-full"
 />
+
 
               </div>
               {/* Assigned To */}

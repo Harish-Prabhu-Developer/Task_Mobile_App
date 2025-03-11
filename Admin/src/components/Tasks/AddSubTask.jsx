@@ -23,7 +23,7 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(...SubTasksToEdit,...formData);
   };
 
   return (
@@ -103,6 +103,7 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  onClick={handleSubmit}
                 >
                   Submit
                 </button>

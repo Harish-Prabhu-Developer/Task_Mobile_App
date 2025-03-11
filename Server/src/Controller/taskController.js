@@ -42,32 +42,27 @@ export const createTask = async (req, res) => {
     });
 
     await newTask.save();
- 
-    // Log task creation
-    await LogModel.create({
-      task: newTask._id,
-      action: "Task Created",
-      performedBy: req.user._id,
-      details: `Task "${title}" created.`,
-    });
 
     existingProject.updatedBy = req.user._id;
     existingProject.tasks.push(newTask._id);
-    
+
     if (assignedTo.length > 0) {
       const assignedUsers = await UserModel.find({ _id: { $in: assignedTo } });
+
       for (const user of assignedUsers) {
         user.tasks.push(newTask._id);
         await user.save();
       }
-      existingProject.teamMembers.push(...assignedTo);
+
+      // Fix: Ensure unique users in teamMembers
+      existingProject.teamMembers = Array.from(new Set([...existingProject.teamMembers.map(id => id.toString()), ...assignedTo]));
     }
 
     await existingProject.save();
 
-    res.status(201).json({ status:"success", msg: "Task created successfully", task: newTask });
+    res.status(201).json({ status: "success", msg: "Task created successfully", task: newTask });
   } catch (error) {
-    res.status(500).json({ status:"fail",msg: error.message });
+    res.status(500).json({ status: "fail", msg: error.message });
   }
 };
 
@@ -118,41 +113,39 @@ export const updateTask = async (req, res) => {
     const taskId = req.params.id;
     const updates = req.body;
 
-    if (req.files) {
-      updates.assets = req.files.map(file => file.path);
+    // Fetch existing task
+    const existingTask = await TaskModel.findById(taskId);
+    if (!existingTask) {
+      return res.status(404).json({ status: "fail", msg: "Task not found" });
     }
 
-    if (updates.stage) {
-      const activity = await ActivitiesModel.create({
-        type: updates.stage,
-        activity: `Task moved to ${updates.stage}`,
+    // Preserve old assets and append new ones if uploaded
+    if (req.files && req.files.length > 0) {
+      const newFiles = req.files.map(file => file.path);
+      updates.assets = [...existingTask.assets, ...newFiles];
+    } else {
+      updates.assets = existingTask.assets; // Keep existing assets if no new file
+    }
+
+    // Handle activity log
+    if (updates.activities) {
+      const activityData = await ActivitiesModel.create({
+        type: updates.type,
+        activity: updates.activity,
         by: req.user._id
       });
-      updates.$push = { activities: activity._id };
+      updates.$push = { activities: activityData._id };
     }
 
-     // Log the status update
-     if (updates.stage && updates.stage !== existingTask.stage) {
-      await LogModel.create({
-        task: taskId,
-        action: `Task moved to ${updates.stage}`,
-        performedBy: req.user._id,
-        details: `Task status changed from "${existingTask.stage}" to "${updates.stage}".`,
-      });
-    }
-
+    // Update the task
     const updatedTask = await TaskModel.findByIdAndUpdate(taskId, updates, { new: true })
       .populate("assignedTo", "name email role subRole")
       .populate("project")
       .populate("activities");
 
-    if (!updatedTask) {
-      return res.status(404).json({status:"fail", msg: "Task not found" });
-    }
-
-    res.status(200).json({ status:"success",msg: "Task updated successfully", task: updatedTask });
+    res.status(200).json({ status: "success", msg: "Task updated successfully", task: updatedTask });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({ status: "fail", msg: error.message });
   }
 };
 

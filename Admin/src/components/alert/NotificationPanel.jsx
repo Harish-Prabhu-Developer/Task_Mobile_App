@@ -59,7 +59,7 @@ const NotificationPanel = ({styles}) => {
       </button>
 
       {open && (
-        <div className='absolute -right-16 md:-right-2 z-10 mt-5 w-80 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5'>
+        <div className='absolute -right-10 md:-right-2  z-10 mt-5 w-80 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5'>
           <div className='p-4'>
             {data.slice(0, 5).map((item, index) => (
               <div

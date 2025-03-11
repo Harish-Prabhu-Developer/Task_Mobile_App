@@ -89,9 +89,9 @@ const closeAddTaskDialog = () => {
 const handleTaskSubmit = async (Taskdata) => {
   console.log("Task Data:", Taskdata);
   if (taskToEdit&&formStage==="Edit") {
-    console.log("Edit Task",Taskdata);
+    console.log("Edit Task",Taskdata._id);
     try {
-      const res =await dispatch(updateTask(taskToEdit._id,Taskdata));
+      const res =await dispatch(updateTask({ taskId: taskToEdit._id, taskData: Taskdata }));
       console.log("Task Update Response:",res);
       if (res.payload.status==="success"&&res.payload.msg==="Task updated successfully") {
         toast.success(res.payload.msg);
