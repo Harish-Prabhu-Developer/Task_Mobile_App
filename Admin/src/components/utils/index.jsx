@@ -86,34 +86,34 @@ export const formatDate = (date) => {
     return user.role + " " + user.subRole;
   }
 export const TASKTYPEICON = {
-    commented: (
+  Commented: (
       <div className='w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white'>
-        <MdOutlineMessage />,
+        <MdOutlineMessage size={22} />
       </div>
     ),
-    started: (
+    Started: (
       <div className='w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white'>
         <FaThumbsUp size={20} />
       </div>
     ),
-    assigned: (
-      <div className='w-6 h-6 flex items-center justify-center rounded-full bg-gray-500 text-white'>
-        <FaUser size={14} />
+    Assigned: (
+      <div className='w-10 h-10 flex items-center justify-center rounded-full bg-gray-500 text-white'>
+        <FaUser size={18} />
       </div>
     ),
-    bug: (
+    Bug: (
       <div className='text-red-600'>
         <FaBug size={24} />
       </div>
     ),
-    completed: (
+    Completed: (
       <div className='w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white'>
         <MdOutlineDoneAll size={24} />
       </div>
     ),
-    "in progress": (
-      <div className='w-8 h-8 flex items-center justify-center rounded-full bg-violet-600 text-white'>
-        <GrInProgress size={16} />
+    "In Progress": (
+      <div className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-600 text-white'>
+        <GrInProgress size={18} />
       </div>
     ),
   };
@@ -127,3 +127,4 @@ export const TASKTYPEICON = {
     "Assigned",
   ];
   
+

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 
-const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen }) => {
+const AddSubTask = ({ closeAddSubTasksDialog, SubTasksToEdit, onSubmit, onOpen }) => {
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -17,13 +17,15 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
       });
     }
   }, [SubTasksToEdit]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(...SubTasksToEdit,...formData);
+    onSubmit({ ...formData });
   };
 
   return (
@@ -33,7 +35,7 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-5 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-gray-800 uppercase">
+              <h2 className="text-lg font-bold text-gray-800 uppercase">
                 {SubTasksToEdit ? "Edit Sub-Task" : "Add Sub-Task"}
               </h2>
               <button
@@ -44,7 +46,7 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
               </button>
             </div>
             {/* Form */}
-            <form className="space-y-4" onSubmit={onSubmit}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               {/* Task Name */}
               <div>
                 <label className="block text-gray-900 font-semibold mb-1">
@@ -60,36 +62,35 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
                   required
                 />
               </div>
-              {/*Task Date and tag*/}
-              <div className="flex flex-row justify-between">
-              <div className="w-1/2">
+              {/* Task Date and Tag */}
+              <div className="flex flex-row justify-between space-x-4">
+                <div className="w-1/2">
                   <label className="block text-gray-900 font-semibold mb-1">
                     Task Date
                   </label>
                   <input
                     type="date"
-                    name="TaskDate"
+                    name="date"
                     value={formData.date}
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
                     required
                   />
                 </div>
-
-                <div calssName="w-1/2">
-                <label className="block text-gray-900 font-semibold mb-1">
-                  Tag
-                </label>
-                <input
-                  type="text"
-                  name="tag"
-                  value={formData.tag}
-                  onChange={handleChange}
-                  placeholder="Enter Task tag"
-                  className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
-                  required
-                />
-              </div>
+                <div className="w-1/2">
+                  <label className="block text-gray-900 font-semibold mb-1">
+                    Tag
+                  </label>
+                  <input
+                    type="text"
+                    name="tag"
+                    value={formData.tag}
+                    onChange={handleChange}
+                    placeholder="Enter Task Tag"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
+                    required
+                  />
+                </div>
               </div>
               {/* Action Buttons */}
               <div className="flex justify-end mt-4 space-x-2">
@@ -107,7 +108,7 @@ const AddSubTask = ({ closeAddSubTasksDialog,SubTasksToEdit, onSubmit, onOpen })
                 >
                   Submit
                 </button>
-              </div>         
+              </div>
             </form>
           </div>
         </div>

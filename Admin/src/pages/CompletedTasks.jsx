@@ -13,21 +13,18 @@ import { getUniqueColor } from '../components/utils/logoIntoName';
 import { toast } from 'react-toastify';
 import CustomDeleteAlert from '../components/alert/CustomDeleteAlert';
 
-const Task = () => {
+const CompletedTasks = () => {
     const [view, setView] = useState("board");
     const dispatch = useDispatch();
-    // Handle missing token
-    const token = localStorage.getItem("token");
-    const Decodetoken = token ? jwtDecode(token) : {};
+
     useEffect(() => {
       const getTasks = async () => {
         await dispatch(fetchtasks());
       };
       getTasks();
     }, [dispatch]);
-const tasks=useSelector((state)=>state.assigntasks.tasks)
-
-
+const value =useSelector((state)=>state.assigntasks.tasks);
+const tasks=value.filter((task) => task.stage === "completed");
 const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
 const [taskToEdit, setTaskToEdit] = useState(null);
 const [formStage,setFormStage]=useState("Add");
@@ -79,7 +76,7 @@ const handleTaskSubmit = async (Taskdata) => {
         toast.error(res.payload);
        
       }else{
-        toast.error(res.payload);
+        toast.error(res.payload.msg);
       }
     } catch (error) {
       toast.error(error.message);
@@ -97,7 +94,7 @@ const handleTaskSubmit = async (Taskdata) => {
         toast.error(res.payload);
         
       }else{
-        toast.error(res.payload);
+        toast.error(res.payload.msg);
       }
     } catch (error) {
       toast.error(error.message);
@@ -135,7 +132,9 @@ const confirmDelete = async () => {
   setTaskToDelete(null);
 };
 
-
+// Handle missing token
+const token = localStorage.getItem("token");
+const Decodetoken = token ? jwtDecode(token) : {};
   return (
     <>
       <AddTask
@@ -158,19 +157,8 @@ const confirmDelete = async () => {
       <div className="p-1 mt-12 sm:mt-0 w-full space-y-6 bg-slate-100 min-h-screen scrollbar-hide">
               {/* Header */}
               <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Completed Tasks</h1>
       
-                {/* Add Button (Admin & Manager Only) */}
-                {(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") && (
-                  <button
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md active:scale-95"
-                  onClick={() => openAddTaskDialog()}  
-                >
-                
-                    <FaPlus className="text-sm" />
-                    <span className="text-sm font-medium">Add Task</span>
-                  </button>
-                )}
               </div>
       
               {/* Tabs (Board View / List View) */}
@@ -194,37 +182,6 @@ const confirmDelete = async () => {
                   <span className="text-sm font-medium">List View</span>
                 </button>
               </div>
-              {/*Add Todo or Add In Progress or Add Complete Task*/}
-              {(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") && (
-              <div className='flex flex-row items-center justify-between gap-2 md:gap-1'>
-              <div className=' hover:cursor-pointer shadow-lg hover:border-blue-500 hover:text-blue-600  bg-white  hover:bg-slate-300 w-72 text-center text-xs md:text-base h-12 border-2  rounded-lg flex flex-row items-center justify-between p-2'
-                   onClick={() => handleAddBtnStageTask("todo")}>
-                  <div className='flex flex-row items-center gap-2'>
-                     <div className={`w-4 h-4 rounded-full ${TASK_TYPE["todo"]}`} />
-                    <p className='text-black font-medium'>To Do</p>
-                  </div>
-                  <FaPlus className= "sm:text-sm " />
-              </div>
-              <div className=' hover:cursor-pointer shadow-lg hover:border-blue-500 hover:text-blue-600  bg-white  hover:bg-slate-300 w-72 text-center text-xs md:text-base h-12 border-2  rounded-lg flex flex-row items-center justify-between p-2'
-                   onClick={() => handleAddBtnStageTask("in progress")}>
-                  <div className='flex flex-row items-center gap-2'>
-                  <div className={`w-4 h-4 rounded-full ${TASK_TYPE["in progress"]}`} />
-                    <p className='text-black font-medium'>In Progress</p>
-                  </div>
-                  <FaPlus className= "sm:text-sm " />
-              </div>
-              <div className='hover:cursor-pointer shadow-lg hover:border-blue-500  hover:text-blue-600 bg-white  hover:bg-slate-300 w-72 text-center text-xs md:text-base h-12 border-2  rounded-lg flex flex-row items-center justify-between p-2'
-                   onClick={() => handleAddBtnStageTask("completed")}>
-                  <div className='flex flex-row items-center gap-2'>
-                    <div className={`w-4 h-4 rounded-full ${TASK_TYPE["completed"]}`} />
-                    <p className='text-black font-medium'>Completed</p>
-                  </div>
-                  <FaPlus className= "sm:text-sm " />
-              </div>
-
-            </div>                
-              )}
-
       
               {/* View Content */}
               {view === "board" ? (
@@ -333,4 +290,4 @@ const confirmDelete = async () => {
   )
 }
 
-export default Task
+export default CompletedTasks;

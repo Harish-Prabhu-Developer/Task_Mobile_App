@@ -12,7 +12,7 @@ const TaskRouter = express.Router();
 TaskRouter.post("/add", authenticateUser, authorizeRoles("Admin", "Manager"), uploadAssets, createTask);
 TaskRouter.get("/getall", authenticateUser, getTasks);
 TaskRouter.get("/get/:id", authenticateUser, getTask);
-TaskRouter.put("/update/:id", authenticateUser, authorizeRoles("Admin", "Manager"), uploadAssets, updateTask);
+TaskRouter.put("/update/:id", authenticateUser, uploadAssets, updateTask);
 TaskRouter.delete("/delete/:id", authenticateUser, authorizeRoles("Admin", "Manager"), deleteTask);
 
 export default TaskRouter;

@@ -5,9 +5,6 @@ import Project from "./pages/Project";
 import User from "./pages/User";
 import Task from "./pages/Task";
 import { Mobilenavbar, Sidebar } from "./components/navigation/SideandMobilenavbar";
-import { TodosTasks } from "./components/Tasks/TodosTasks";
-import { InProgressTasks } from "./components/Tasks/InProgressTasks";
-import { CompletedTasks } from "./components/Tasks/CompletedTasks";
 import Login from "./pages/Login";
 import { useDispatch } from "react-redux";
 import { logout, setProfile } from "./redux/slice/auth/authSlice";
@@ -15,6 +12,9 @@ import Header from "./components/navigation/Header";
 import { jwtDecode } from "jwt-decode";
 import CustomLoading from "./components/CustomComponent/CustomLoading";
 import TaskDetails from "./pages/TaskDetails";
+import InProgressTasks from "./pages/InProgressTasks";
+import CompletedTasks from "./pages/CompletedTasks";
+import TodosTasks from "./pages/TodosTasks";
 
 // ✅ Protected Route Component
 const ProtectedRoute = () => {
@@ -111,11 +111,10 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Project />} />
           <Route path="/users" element={<User />} />
-          <Route path="/tasks" element={<Task />}>
-            <Route path="todos" element={<TodosTasks />} />
-            <Route path="in-progress" element={<InProgressTasks />} />
-            <Route path="completed" element={<CompletedTasks />} />
-          </Route>
+          <Route path="/tasks" element={<Task />}/>
+          <Route path="/todos" element={<TodosTasks />} />
+          <Route path="/in-progress" element={<InProgressTasks />} />
+          <Route path="/completed" element={<CompletedTasks />} />
           <Route path="/task/:id" element={<TaskDetails />} />
         </Route>
       </Route>

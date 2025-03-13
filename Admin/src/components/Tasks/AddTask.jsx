@@ -42,13 +42,19 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
     "In Progress":"Add New In Progress Task",
     "Completed":"Add New Completed Task"
   }
+  const stageMap = {
+    todo: "todo",
+    "in progress": "in progress",
+    completed: "completed",
+  };
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     project: "",
     assignedTo: [],
     priority: "normal",
-    stage: "todo",
+    stage: stageMap[formStage] || "todo", // Uses lookup object
     assets: [],
     dueDate: "",
   });

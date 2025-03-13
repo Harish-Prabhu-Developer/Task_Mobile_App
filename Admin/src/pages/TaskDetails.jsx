@@ -183,7 +183,7 @@ const TaskDetails = () => {
           </div>
         </div>
       ) : (
-        <Activities activity={task?.activities} />
+        <Activities  task={task} />
       )}
     </div>
   );

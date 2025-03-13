@@ -4,8 +4,8 @@ import mongoose, { Schema } from "mongoose";
 const activitySchema = new mongoose.Schema({
   type: {
     type: String,
-    default: "assigned",
-    enum: ["assigned","started","in progress","bug","completed","commented",],
+    default: "Assigned",
+    enum: ["Assigned","Started","In Progress","Bug","Completed","Commented",],
   },
   activity: { type: String },
   date: { type: Date, default: Date.now },

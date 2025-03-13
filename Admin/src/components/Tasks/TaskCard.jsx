@@ -17,7 +17,9 @@ import { getUniqueColor } from "../utils/logoIntoName";
 import AddSubTask from "./AddSubTask";
 import UserInfo from "../User/UserInfo";
 import { useNavigate } from "react-router-dom";
-import { updateTask } from "../../redux/slice/AssignTask/AssignTaskSlice";
+import { fetchtasks, updateTask } from "../../redux/slice/AssignTask/AssignTaskSlice";
+import { toast } from "react-toastify";
+import TaskDialog from "./TaskDialog";
 const TaskCard = ({ task }) => {
   const navigate = useNavigate();
   const users = useSelector((state) => state.user.users);
@@ -43,11 +45,44 @@ const TaskCard = ({ task }) => {
     setSubTasksToEdit(null);
   };
 
-  const handleSubTaskSubmit = (SubTaskdata) => {
+  const handleSubTaskSubmit = async (SubTaskdata) => {
     console.log("SubTask Data:", SubTaskdata);
-     
+  
+    if (!task?._id) {
+      console.error("Task ID is missing!");
+      toast.error("Error: Task not found.");
+      return;
+    }
+  
+    const data = await {
+      
+        "subTasks": {
+          "title": SubTaskdata.title,
+          "date": SubTaskdata.date,
+          "tag": SubTaskdata.tag,
+        },
+      
+    };
+    console.log("Sub Task Data push :", data);
+    
+    try {
+      const res = await dispatch(updateTask({ taskId: task._id, taskData: data }));
+      console.log("Sub Task Update Response:", res);
+  
+      if (res.payload && res.payload.status === "success" && res.payload.msg === "Task updated successfully") {
+        toast.success("Sub Task Added Successfully");
+        dispatch(fetchtasks()); // Fetch tasks only if update was successful
+      } else {
+        toast.error(res.payload?.msg || "Failed to update task.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.log("Updated Task.jsx Error:", error.message);
+    }
+  
     closeAddSubTasksDialog();
   };
+  
 
   return (
     <>
@@ -59,7 +94,7 @@ const TaskCard = ({ task }) => {
       />
 
       <div className="bg-white shadow-lg border-gray-400 border-spacing-48 rounded-lg p-4"
-            onClick={()=>navigate(`/task/${task._id}`,{ state: { task } })}
+            //onClick={()=>navigate(`/task/${task._id}`,{ state: { task } })}
             >
         {/* Task Priority */}
         <div className="flex flex-row items-center justify-between">
@@ -69,6 +104,7 @@ const TaskCard = ({ task }) => {
             <span className="text-lg">{ICONS[task?.priority]}</span>
             <span className="uppercase">{task?.priority} Priority</span>
           </div>
+          <div><TaskDialog task={task}/></div>
         </div>
 
 
