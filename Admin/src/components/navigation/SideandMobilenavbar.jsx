@@ -9,10 +9,34 @@ import { IMAGES } from "../../Config";
 import Switch from "../auth/Switch";
 import Profile from "../User/Profile";
 import CustomDeleteAlert from "../alert/CustomDeleteAlert";
-import { ADMIN_MENU_ITEMS, JUNIOR_AND_SENIOR_MENU_ITEMS, MANAGER_MENU_ITEMS, MENU_ITEMS, USER_MENU_ITEMS } from "./NavMenus";
 import { jwtDecode } from "jwt-decode";
 import NotificationPanel from "../alert/NotificationPanel";
 import ProfileAvatar from "../User/ProfileAvatar";
+import { FaTasks, FaUserPlus } from "react-icons/fa";
+import { GrInProgress } from "react-icons/gr";
+import { IoFolderOpenSharp } from "react-icons/io5";
+import { MdDone, MdReport } from "react-icons/md";
+import { RiDashboard3Line, RiTodoFill } from "react-icons/ri";
+
+// Handle missing token
+const token = localStorage.getItem("token");
+const Decodetoken = token ? jwtDecode(token) : {};
+
+const MENU_ITEMS = [
+  { id: "dashboard", name: "Dashboard", icon: <RiDashboard3Line /> },
+  
+  { id: "tasks", name: "Tasks", icon: <FaTasks /> },
+  {id:"todos",name:"Todos",icon:<RiTodoFill/>},
+  {id:"in-progress",name:"In Progress",icon:<GrInProgress/>},
+  {id:"completed",name:"Completed",icon:<MdDone/>},
+];
+if (Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") {
+  MENU_ITEMS.splice(1, 0, 
+    { id: "projects", name: "Projects", icon: <IoFolderOpenSharp /> },
+    { id: "users", name: "Users", icon: <FaUserPlus /> },
+    { id: "report", name: "Report", icon: <MdReport/> }
+  );
+}
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -85,8 +109,7 @@ const Sidebar = () => {
           {/* Navigation Menu with Role -based Links */}
           <nav className="mt-6 w-full flex flex-col gap-2 px-4">
             {/*Admin nav */}
-            {decodedToken?.userLevel === "Admin" && (
-              ADMIN_MENU_ITEMS.map((item) => (
+            {MENU_ITEMS.map((item) => (
                 <NavLink
                   key={item.id}
                   to={`/${item.id}`}
@@ -99,76 +122,8 @@ const Sidebar = () => {
                     {item.name}
                   </span>
                 </NavLink>
-              ))
-            )}
-            {/*Manager nav */}
-            {decodedToken?.userLevel === "Manager" && (
-              MANAGER_MENU_ITEMS.map((item) => (
-                <NavLink
-                  key={item.id}
-                  to={`/${item.id}`}
-                  className={({ isActive }) =>
-                    isActive ? activeLinkClasses : linkClasses
-                  }
-                >
-                  <i className="text-2xl">{item.icon}</i>
-                  <span className={`${isOpen ? "block" : "hidden"}`}>
-                    {item.name}
-                  </span>
-                </NavLink>
-              ))
-            )}
-            {/*User nav */}
-            {decodedToken?.userLevel === "User" && (
-              USER_MENU_ITEMS.map((item) => (
-                <NavLink
-                  key={item.id}
-                  to={`/${item.id}`}
-                  className={({ isActive }) =>
-                    isActive ? activeLinkClasses : linkClasses
-                  }
-                >
-                  <i className="text-2xl">{item.icon}</i>
-                  <span className={`${isOpen ? "block" : "hidden"}`}>
-                    {item.name}
-                  </span>
-                </NavLink>
-              ))
-            )}
-            {/*Junior nav */}
-            {userRole.trim() === "Junior" && (
-              JUNIOR_AND_SENIOR_MENU_ITEMS.map((item) => (
-                <NavLink
-                  key={item.id}
-                  to={`/${item.id}`}
-                  className={({ isActive }) =>
-                    isActive ? activeLinkClasses : linkClasses
-                  }
-                >
-                  <i className="text-2xl">{item.icon}</i>
-                  <span className={`${isOpen ? "block" : "hidden"}`}>
-                    {item.name}
-                  </span>
-                </NavLink>
-              ))
-            )}
-            {/*Senior nav */}
-            {userRole.trim() === "Senior" && (
-              JUNIOR_AND_SENIOR_MENU_ITEMS.map((item) => (
-                <NavLink
-                  key={item.id}
-                  to={`/${item.id}`}
-                  className={({ isActive }) =>
-                    isActive ? activeLinkClasses : linkClasses
-                  }
-                >
-                  <i className="text-2xl">{item.icon}</i>
-                  <span className={`${isOpen ? "block" : "hidden"}`}>
-                    {item.name}
-                  </span>
-                </NavLink>
-              ))
-            )}
+              ))}
+          
           </nav>
 
           {/* Profile Section */}

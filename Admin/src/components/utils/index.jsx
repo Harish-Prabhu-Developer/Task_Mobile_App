@@ -3,15 +3,23 @@ import { GrInProgress } from "react-icons/gr";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineDoneAll, MdOutlineMessage } from "react-icons/md";
 
 export const formatDate = (date) => {
-    // Get the month, day, and year
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const day = date.getDate();
-    const year = date.getFullYear();
+  if (!date) return ""; // Handle empty values gracefully
   
-    const formattedDate = `${day}-${month}-${year}`;
-  
-    return formattedDate;
-  };
+  const parsedDate = new Date(date); // Convert string to Date object
+
+  if (isNaN(parsedDate.getTime())) {
+    console.error("Invalid date:", date); // Debugging output
+    return ""; // Return an empty string for invalid dates
+  }
+
+  // Format the date
+  const month = parsedDate.toLocaleString("en-US", { month: "short" });
+  const day = parsedDate.getDate();
+  const year = parsedDate.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
   
   export function dateFormatter(dateString) {
     const inputDate = new Date(dateString);
@@ -127,4 +135,13 @@ export const TASKTYPEICON = {
     "Assigned",
   ];
   
-
+export const Enum=[
+  "Completed",
+    "In Progress",
+    "Not Started",
+    "Total",
+  "completed",
+  "in progress",
+  "todo",
+  "total",
+]

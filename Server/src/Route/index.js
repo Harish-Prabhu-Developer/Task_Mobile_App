@@ -5,6 +5,7 @@ import ProjectRouter from "./projectRoute.js";
 import TaskRouter from "./taskRoute.js";
 import LogRoute from "./logRoute.js";
 import CommentRoute from "./commentRoute.js";
+import summaryRouter from "./summaryRoute.js";
 
 
 const Router = express.Router();
@@ -14,6 +15,7 @@ Router.use("/projects",ProjectRouter);
 Router.use("/tasks",TaskRouter);
 Router.use("/logs",LogRoute);
 Router.use("/comments",CommentRoute);
+Router.use("/analytics",summaryRouter);
 
 
 export default Router;

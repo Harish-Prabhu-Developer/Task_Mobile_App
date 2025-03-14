@@ -203,7 +203,8 @@ const Decodetoken = token ? jwtDecode(token) : {};
                         <th className="p-4 text-md text-left w-1/6">Created At</th>
                         <th className="p-4 text-md text-left w-1/6">Assets</th>
                         <th className="p-4 text-md text-left w-1/6">Assiged To</th>
-                        <th className="p-4 text-md text-center w-1/6">Actions</th>
+                        {(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") && (
+                          <th className="p-4 text-md text-center w-1/6">Actions</th>)}
                       </tr>
                     </thead>
                     <tbody>
@@ -266,18 +267,21 @@ const Decodetoken = token ? jwtDecode(token) : {};
                           </td>
 
                           {/* Actions */}
-                          <td className="p-4 text-left w-1/6">
-                            <div className="flex gap-2 md:gap-4 justify-start">
-                              <button className="px-4 py-2 bg-blue-100 text-blue-600 hover:bg-blue-700 hover:text-white rounded-md transition-all"
-                                      onClick={() =>openAddTaskDialog(task)}>
-                                <MdModeEditOutline />
-                              </button>
-                              <button className="px-4 py-2 bg-red-100 text-red-500 hover:bg-red-600 hover:text-white rounded-md transition-all"
-                                      onClick={() => handleDeleteTask(task._id)}>
-                                <MdDelete />
-                              </button>
-                            </div>
-                          </td>
+                        {Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager" &&(
+                                 <td className="p-4 text-left w-1/6">
+                                 <div className="flex gap-2 md:gap-4 justify-start">
+                                   <button className="px-4 py-2 bg-blue-100 text-blue-600 hover:bg-blue-700 hover:text-white rounded-md transition-all"
+                                           onClick={() =>openAddTaskDialog(task)}>
+                                     <MdModeEditOutline />
+                                   </button>
+                                   <button className="px-4 py-2 bg-red-100 text-red-500 hover:bg-red-600 hover:text-white rounded-md transition-all"
+                                           onClick={() => handleDeleteTask(task._id)}>
+                                     <MdDelete />
+                                   </button>
+                                 </div>
+                               </td>
+                        )}
+
                         </tr>
                       ))}
                     </tbody>

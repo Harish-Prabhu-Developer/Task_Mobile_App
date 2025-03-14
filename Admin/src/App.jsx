@@ -15,6 +15,8 @@ import TaskDetails from "./pages/TaskDetails";
 import InProgressTasks from "./pages/InProgressTasks";
 import CompletedTasks from "./pages/CompletedTasks";
 import TodosTasks from "./pages/TodosTasks";
+import Report from "./pages/Report";
+import { fetchreportData, fetchSummaryData } from "./redux/slice/Analytical/Analytical";
 
 // ✅ Protected Route Component
 const ProtectedRoute = () => {
@@ -83,6 +85,8 @@ const App = () => {
       }
 
       await dispatch(setProfile()); // Fetch user profile on mount
+      await dispatch(fetchSummaryData());
+      await dispatch(fetchreportData());
       setIsLoading(false); // Mark loading complete
     };
 
@@ -116,6 +120,7 @@ const App = () => {
           <Route path="/in-progress" element={<InProgressTasks />} />
           <Route path="/completed" element={<CompletedTasks />} />
           <Route path="/task/:id" element={<TaskDetails />} />
+          <Route path="/report" element={<Report />} />
         </Route>
       </Route>
 

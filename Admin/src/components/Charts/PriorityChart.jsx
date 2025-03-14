@@ -1,4 +1,5 @@
 import React from "react";
+import {  useSelector } from "react-redux";
 import {
   Bar,
   BarChart,
@@ -9,8 +10,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
 const PriorityChart = () => {
-  const chartData = [
+const chartData = [
     {
       name: "High",
       total: 2400,
@@ -27,10 +29,12 @@ const PriorityChart = () => {
       name: "Low",
       total: 2290,
     },
-  ];
+  ]; 
+
+ const SummaryData=useSelector((state)=>state.analytical.summaryData);
   return (
     <ResponsiveContainer width={"100%"} height={300}>
-      <BarChart width={150} height={40} data={chartData}>
+      <BarChart width={150} height={40} data={SummaryData?.PriorityChartData||chartData}>
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />

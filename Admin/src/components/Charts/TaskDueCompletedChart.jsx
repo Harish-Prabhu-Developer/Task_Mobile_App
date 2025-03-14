@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const TaskDueCompletedChart = () => {
@@ -7,11 +8,11 @@ const TaskDueCompletedChart = () => {
     { month: "Feb", due: 30, completed: 20 },
     { month: "Mar", due: 40, completed: 25 },
     { month: "Apr", due: 50, completed: 35 },
-  ];
-
+  ]; 
+  const SummaryData=useSelector((state)=>state.analytical.summaryData);
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data}>
+      <BarChart data={SummaryData?.TaskDueCompletedData||data}>
         <XAxis dataKey="month" />
         <YAxis />
         <CartesianGrid strokeDasharray="3 3" />

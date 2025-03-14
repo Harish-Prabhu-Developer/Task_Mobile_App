@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const ProjectProgressChart = () => {
@@ -7,11 +8,11 @@ const ProjectProgressChart = () => {
     { month: "Feb", completed: 20, inProgress: 10 },
     { month: "Mar", completed: 30, inProgress: 15 },
     { month: "Apr", completed: 50, inProgress: 20 },
-  ];
-
+  ]; 
+  const SummaryData=useSelector((state)=>state.analytical.summaryData);
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data}>
+      <LineChart data={SummaryData?.ProjectProgressData||data}>
         <XAxis dataKey="month" />
         <YAxis />
         <CartesianGrid strokeDasharray="3 3" />
