@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchtasks, updateTask } from "../../redux/slice/AssignTask/AssignTaskSlice";
 import { toast } from "react-toastify";
 import TaskDialog from "./TaskDialog";
+import { jwtDecode } from "jwt-decode";
 const TaskCard = ({ task }) => {
   const navigate = useNavigate();
   const users = useSelector((state) => state.user.users);
@@ -27,7 +28,9 @@ const TaskCard = ({ task }) => {
   const [SubTasksToEdit, setSubTasksToEdit] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useDispatch();
-  
+  // Handle missing token
+  const token = localStorage.getItem("token");
+  const Decodetoken = token ? jwtDecode(token) : {};  
 
   const latestSubTask = task?.subTasks?.length
     ? task.subTasks.reduce((latest, current) =>
@@ -94,7 +97,11 @@ const TaskCard = ({ task }) => {
       />
 
       <div className="bg-white shadow-lg border-gray-400 border-spacing-48 rounded-lg p-4"
-            //onClick={()=>navigate(`/task/${task._id}`,{ state: { task } })}
+            onClick={
+              !(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager")
+                ? () => navigate(`/task/${task._id}`, { state: { task } })
+                : undefined
+            }
             >
         {/* Task Priority */}
         <div className="flex flex-row items-center justify-between">
@@ -238,13 +245,15 @@ const TaskCard = ({ task }) => {
         )}
 
         {/* Add SubTask Button */}
-        <button
-          onClick={() => openAddSubTasksDialog()}
-          className="w-full flex gap-4 items-center text-sm text-gray-500 font-semibold"
-        >
-          <IoMdAdd className="text-lg" />
-          <span>ADD SUBTASK</span>
-        </button>
+        {(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") && (
+            <button
+            onClick={() => openAddSubTasksDialog()}
+            className="w-full flex gap-4 items-center text-sm text-gray-500 font-semibold"
+          >
+            <IoMdAdd className="text-lg" />
+            <span>ADD SUBTASK</span>
+          </button>
+        )}
       </div>
     </>
   );

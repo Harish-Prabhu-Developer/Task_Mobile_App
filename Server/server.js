@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./src/Config/db.js";
 import path from "path";
 import Router from "./src/Route/index.js";
+import { managingTeamMembers } from "./src/Controller/taskController.js";
 
 dotenv.config();
 const app = express();
@@ -20,7 +21,7 @@ app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
 app.get("/", (req, res) => res.status(200).json("Welcome to TaskApp!"));
 
 
-
+managingTeamMembers();
 connectDB()
   .then(() => {
     app.listen(PORT, () => {

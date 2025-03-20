@@ -1,13 +1,6 @@
 import UserModel from "../Model/UserModel.js";
 import TaskModel from "../Model/TaskModel.js";
 import ProjectModel from "../Model/ProjectModel.js";
-import ActivitiesModel from "../Model/ActivitiesModel.js";
-
-
-
-
-
-
 export const getSummaryData = async (req, res) => {
   try {
 
@@ -183,11 +176,7 @@ const TaskStatusTotalAggregation = await TaskModel.aggregate([
   }
 };
 
-
-
 //Report data
-
-
 export const getReportSummary = async (req, res) => {
     try {
       const reportAggregation = await TaskModel.aggregate([

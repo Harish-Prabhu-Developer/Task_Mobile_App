@@ -247,15 +247,35 @@ export const deleteTask = async (req, res) => {
     await ProjectModel.findByIdAndUpdate(deletedTask.project, {
       $pull: { tasks: taskId }
     });
+    
 
     await ActivitiesModel.deleteMany({ _id: { $in: deletedTask.activities } });
     await UserModel.updateMany(
       { tasks: taskId },
       { $pull: { tasks: taskId } }
     );
-
+    console.log("Deleted Task:", deletedTask.project);
+    
     res.status(200).json({status:"success", msg: "Task deleted successfully" });
   } catch (error) {
     res.status(500).json({ msg: error.message });
+  }
+};
+// Manage TeamMember on equals to assignedTo 
+// don't get request and send response is a normal function
+export const managingTeamMembers = async (req, res) => {
+  try {
+    //get all project TeamMembers
+    const teamMembers = await ProjectModel.find({}, 'teamMembers tasks');
+    teamMembers.forEach(team => console.log("Get TeamMembers : ", team));
+    
+    //get all Task assignedTo
+    const assign = await TaskModel.find({}, 'assignedTo project');
+    console.log("Assigned : ", assign);
+    
+    
+  } catch (error) {
+    console.log("Error : ",error.message);
+    
   }
 };

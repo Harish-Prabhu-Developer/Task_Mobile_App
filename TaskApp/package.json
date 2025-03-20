@@ -10,9 +10,25 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-masked-view/masked-view": "^0.3.2",
+    "@react-navigation/bottom-tabs": "^7.2.1",
+    "@react-navigation/native": "^7.0.15",
+    "@react-navigation/stack": "^7.1.2",
+    "@reduxjs/toolkit": "^2.6.1",
+    "axios": "^1.8.3",
+    "crypto-js": "^4.2.0",
     "react": "18.3.1",
     "react-native": "0.76.6",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-animatable": "^1.4.0",
+    "react-native-gesture-handler": "^2.24.0",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-reanimated": "^3.17.1",
+    "react-native-safe-area-context": "^5.3.0",
+    "react-native-screens": "^4.9.2",
+    "react-native-vector-icons": "^10.2.0",
+    "react-redux": "^9.2.0",
+    "redux": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -25,6 +41,7 @@
     "@react-native/eslint-config": "0.76.6",
     "@react-native/metro-config": "0.76.6",
     "@react-native/typescript-config": "0.76.6",
+    "@types/crypto-js": "^4.2.2",
     "@types/react": "^18.2.6",
     "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^18.0.0",
