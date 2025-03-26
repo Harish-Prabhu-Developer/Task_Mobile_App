@@ -5,5 +5,5 @@ import { authenticateUser } from '../Middelware/authMiddleware.js';
 const summaryRouter = express.Router();
 
 summaryRouter.get("/summary", authenticateUser, getSummaryData);
-summaryRouter.get("/report",authenticateUser, getReportSummary);
+summaryRouter.get("/report", getReportSummary);
 export default summaryRouter;

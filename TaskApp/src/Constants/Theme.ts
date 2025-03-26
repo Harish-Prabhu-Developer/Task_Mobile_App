@@ -1,4 +1,5 @@
 import { Dimensions } from "react-native";
+import {LinearGradient} from "react-native-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
@@ -9,11 +10,12 @@ export const COLORS: any = {
   lime: "#2AD699",
   lightGreen: "#E7F9EF",
   lightGreen1: "#8EbCA0",
-
+  ourYellow: [ "#FDE047","#fcd303"],
+  ourBlue: ["#083344", "#1E40AF"], 
   white: "#fff", // Fixed typo ("while" -> "white")
   white2: "#F9F9F9",
   black: "#020202",
-  blue: "#0776DD",
+  blue: "#0000FF",
   red: "#ff0000",
   FontRed: "#FA0000",
   gray: "#777777",

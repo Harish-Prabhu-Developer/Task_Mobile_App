@@ -51,8 +51,7 @@ const taskSchema = new mongoose.Schema({
     required: true,
   },
 
-  logs: [{ type: Schema.Types.ObjectId, ref: "Log" }], // Link to logs
-  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }], // Link to comments
+
 },
 {
     timestamps:true,

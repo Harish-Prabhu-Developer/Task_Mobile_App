@@ -72,21 +72,7 @@ const Header = () => {
             onOpen={ConfirmLogDialog}
             onDelete={handleLogout}
             onCancel={() => setConfirmLogDialog(false)}/>
-      <header className="w-full bg-gradient-to-l from-cyan-950 to-blue-800 p-2 shadow-md flex justify-between items-center">
-        {/* Search Bar */}
-        <div className="flex items-center gap-4">
-          <div className="p-2 rounded-lg border border-gray-300 flex items-center bg-white">
-            <IoSearch size={20} className="text-gray-600" />
-            <input
-              type="search"
-              placeholder="Search..."
-              className="outline-none border-none ml-2"
-            />
-          </div>
-        </div>
-
-
-
+      <header className="w-full bg-gradient-to-l from-cyan-950 to-blue-800 p-2 shadow-md flex justify-end items-center">
         {/* Profile Dropdown */}
         <div className="relative flex flex-row justify-between gap-4 items-center">
         <div >

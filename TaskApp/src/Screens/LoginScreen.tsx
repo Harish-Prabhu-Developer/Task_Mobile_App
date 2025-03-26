@@ -6,6 +6,7 @@ import CustomInputBox from '../Components/Input/CustomInputBox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
+import { COLORS } from '../Constants/Theme';
 
 const LoginScreen = () => {
 
@@ -90,7 +91,7 @@ const LoginScreen = () => {
 
 
   return (
-    <LinearGradient colors={['#FFD700', '#FFB000']} style={styles.container}>
+    <LinearGradient colors={COLORS.ourYellow} style={styles.container}>
       <View style={styles.logoContainer}>
         <Image source={require('../assets/images/companylogo.png')} style={styles.logo} />
         <Text style={styles.logoText}>SWOMB Technologies</Text>
@@ -107,6 +108,7 @@ const LoginScreen = () => {
             onChangeText={setEmail}
             iconName="envelope"
             placeholder="you@swomb.app"
+            placeholderTextColor='black'
             iconSize={14} 
             iconColor='#FFB000' 
           />
@@ -118,6 +120,7 @@ const LoginScreen = () => {
           <CustomInputBox 
             iconName="lock"
             placeholder="Password"
+            placeholderTextColor='black'
             value={password}
             iconSize={18}
             iconColor='#FFB000'

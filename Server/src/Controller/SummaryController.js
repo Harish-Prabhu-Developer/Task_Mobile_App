@@ -1,6 +1,7 @@
 import UserModel from "../Model/UserModel.js";
 import TaskModel from "../Model/TaskModel.js";
 import ProjectModel from "../Model/ProjectModel.js";
+import ActivitiesModel from "../Model/ActivitiesModel.js";
 export const getSummaryData = async (req, res) => {
   try {
 
@@ -176,46 +177,108 @@ const TaskStatusTotalAggregation = await TaskModel.aggregate([
   }
 };
 
-//Report data
+// Report data
 export const getReportSummary = async (req, res) => {
-    try {
+  try {
       const reportAggregation = await TaskModel.aggregate([
-        {
-          $lookup: {
-            from: "projects",
-            localField: "project",
-            foreignField: "_id",
-            as: "projectDetails",
+          {
+              $lookup: {
+                  from: "projects",
+                  localField: "project",
+                  foreignField: "_id",
+                  as: "projectDetails",
+              },
           },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "assignedTo",
-            foreignField: "_id",
-            as: "userDetails",
+          {
+              $lookup: {
+                  from: "users",
+                  localField: "assignedTo",
+                  foreignField: "_id",
+                  as: "userDetails",
+              },
           },
-        },
-        {
-          $unwind: "$projectDetails",
-        },
-        {
-          $unwind: "$userDetails",
-        },
-        {
-          $project: {
-            task: "$title",
-            status: "$stage",
-            project: "$projectDetails.name",
-            user: "$userDetails.name",
-            date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+          {
+              $unwind: "$projectDetails",
           },
-        },
+          {
+              $unwind: "$userDetails",
+          },
+          {
+              $project: {
+                  task: "$title",
+                  status: "$stage",
+                  project: "$projectDetails.name",
+                  user: "$userDetails.name",
+                  date: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+              },
+          },
       ]);
-  
-      return res.status(200).json(reportAggregation);
-    } catch (error) {
+
+      
+      const tasks = await TaskModel.find()
+      .populate("project", "name")
+      .populate({
+        path: "activities",
+        populate: {
+          path: "by",
+          select: "name email",
+        },
+      });
+    
+      
+    const formattedActivities = tasks.flatMap(task => 
+      task.activities.map(activity => ({
+        date: new Date(activity.date).toISOString().split("T")[0], // Format date as "YYYY-MM-DD"
+        activity: `${activity.type} Task '${task.title}'`, // Use task title
+        user: activity.by?.name || "Unknown",
+        project: task.project?.name || "Unknown",
+      }))
+    );
+    
+    
+      // Fetch all projects with their progress summary
+      const projects = await ProjectModel.find()
+          .populate({ path: "tasks", select: "stage" })
+          .select("name startDate endDate tasks status");
+
+      // Calculate project progress
+      const projectSummaries = projects.map((project) => {
+          const totalTasks = project.tasks.length;
+          const completedTasks = project.tasks.filter((task) => task.stage === "completed").length;
+          const progress = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
+          return {
+              _id: project._id,
+              name: project.name,
+              startDate: project.startDate,
+              endDate: project.endDate,
+              totalTasks,
+              completedTasks,
+              progress: `${progress}%`,
+              status: project.status,
+          };
+      });
+
+      // Fetch all users with assigned tasks
+      const users = await UserModel.find()
+          .populate({ path: "tasks", select: "title stage dueDate" })
+          .select("name tasks");
+
+      // Process user task summaries
+      const employeeSummaries = users.map((user) => {
+          const overdueTasks = user.tasks.filter(task => new Date(task.dueDate) < new Date() && task.stage !== "completed").length;
+          return {
+              _id: user._id,
+              name: user.name,
+              totalTasks: user.tasks.length,
+              completedTasks: user.tasks.filter(task => task.stage === "completed").length,
+              inProgressTasks: user.tasks.filter(task => task.stage === "in progress").length,
+              overdueTasks,
+          };
+      });
+
+      return res.status(200).json({ reportData:reportAggregation, projectSummaries, employeeSummaries,activities:formattedActivities });
+  } catch (error) {
       console.error("Error fetching report summary:", error);
       return res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
+  }
+};

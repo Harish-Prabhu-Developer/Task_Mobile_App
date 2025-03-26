@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import * as Animatable from 'react-native-animatable';
-import { animate1, circle1, COLORS, animate2, circle2 } from '../../../Constants/Theme';
-import DashboardScreen from '../../../Screens/DashboardScreen';
-import TaskScreen from '../../../Screens/TaskScreen';
-import ProfileScreen from '../../../Screens/ProfileScreen';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import React, { useEffect, useRef } from "react";
+import { StyleSheet, TouchableOpacity, View, Text, ViewStyle, TextStyle } from "react-native";
+import { createBottomTabNavigator, BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import * as Animatable from "react-native-animatable";
+import LinearGradient from "react-native-linear-gradient";
+import { animate1, circle1, COLORS, animate2, circle2 } from "../../../Constants/Theme";
+import DashboardScreen from "../../../Screens/DashboardScreen";
+import TaskScreen from "../../../Screens/TaskScreen";
+import ProfileScreen from "../../../Screens/ProfileScreen";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-// Define the type for Tab items
 type TabItem = {
   route: string;
   label: string;
@@ -16,17 +16,16 @@ type TabItem = {
   component: React.ComponentType<any>;
 };
 
-// Define the tab array with icons from react-native-vector-icons
 const TabArr: TabItem[] = [
-  { route: 'DashboardScreen', label: 'Dashboard', icon: 'home', component: DashboardScreen },
-  { route: 'TaskScreen', label: 'Tasks', icon: 'tasks', component: TaskScreen },
-  { route: 'ProfileScreen', label: 'Profile', icon: 'user', component: ProfileScreen },
+  { route: "DashboardScreen", label: "Dashboard", icon: "home", component: DashboardScreen },
+  { route: "TaskScreen", label: "Tasks", icon: "tasks", component: TaskScreen },
+  { route: "ProfileScreen", label: "Profile", icon: "user", component: ProfileScreen },
 ];
 
 type TabButtonProps = {
   item: TabItem;
   onPress: () => void;
-  accessibilityState: { selected?: boolean };
+  accessibilityState?: { selected?: boolean };
 };
 
 const TabButton: React.FC<TabButtonProps> = ({ item, onPress, accessibilityState }) => {
@@ -53,16 +52,12 @@ const TabButton: React.FC<TabButtonProps> = ({ item, onPress, accessibilityState
         <View
           style={[
             styles.btn,
-            {
-              borderBottomColor: focused ? COLORS.white : COLORS.primarycolor,
-              borderStartColor: focused ? COLORS.white : COLORS.primarycolor,
-              borderEndColor: focused ? COLORS.white : COLORS.primarycolor,
-              borderTopColor: focused ? COLORS.white : COLORS.primarycolor,
-            },
+            { borderColor: focused ? COLORS.white : COLORS.ourBlue[0] }, // Use first gradient color as border
           ]}
         >
-          <Animatable.View ref={circleRef} style={styles.circle} />
-          <FontAwesome name={item.icon} size={20} color={COLORS.white} />
+          <LinearGradient colors={COLORS.ourBlue} style={styles.circle}>
+            <FontAwesome name={item.icon} size={20} color={COLORS.white} />
+          </LinearGradient>
         </View>
         <Animatable.Text ref={textRef} style={styles.text}>
           {item.label}
@@ -80,14 +75,32 @@ const BottomTab: React.FC = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          position: 'absolute',
+          position: "absolute",
           height: 67,
           bottom: 0,
           right: 0,
           left: 0,
-          backgroundColor: COLORS.blue,
-        },
+        } as ViewStyle, // Explicitly typing tabBarStyle
       }}
+      tabBar={(props: BottomTabBarProps) => (
+        <LinearGradient colors={COLORS.ourBlue} style={styles.tabBar}>
+          <View style={styles.innerTabBar}>
+            {props.state.routes.map((route, index) => {
+              const { options } = props.descriptors[route.key];
+              const isFocused = props.state.index === index;
+
+              return (
+                <TabButton
+                  key={index}
+                  item={TabArr[index]}
+                  onPress={() => props.navigation.navigate(route.name)}
+                  accessibilityState={{ selected: isFocused }}
+                />
+              );
+            })}
+          </View>
+        </LinearGradient>
+      )}
     >
       {TabArr.map((item, index) => (
         <Tab.Screen
@@ -109,28 +122,40 @@ export default BottomTab;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   btn: {
     width: 50,
     height: 50,
     borderWidth: 4,
     borderRadius: 50,
-    backgroundColor: COLORS.transparent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    alignItems: "center",
+    justifyContent: "center",
+  } as ViewStyle,
   text: {
     fontSize: 12,
-    textAlign: 'center',
-    fontWeight:'bold',
+    textAlign: "center",
+    fontWeight: "bold",
     color: COLORS.white,
-  },
+  } as TextStyle,
   circle: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.blue,
+    width: 50,
+    height: 50,
     borderRadius: 25,
-  },
+    alignItems: "center",
+    justifyContent: "center",
+  } as ViewStyle,
+  tabBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 67,
+  } as ViewStyle,
+  innerTabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    height: "100%",
+  } as ViewStyle,
 });

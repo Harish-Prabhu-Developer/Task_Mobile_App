@@ -3,8 +3,7 @@ import TaskModel from "../Model/TaskModel.js";
 import ProjectModel from "../Model/ProjectModel.js";
 import UserModel from "../Model/UserModel.js";
 import ActivitiesModel from "../Model/ActivitiesModel.js";
-import LogModel from "../Model/LogModel.js";
-import CommentModel from "../Model/CommentModel.js";
+
 // Create a new task with file uploads
 export const createTask = async (req, res) => {
   try {

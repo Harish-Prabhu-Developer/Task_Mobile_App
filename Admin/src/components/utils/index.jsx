@@ -45,7 +45,17 @@ export const formatDate = (date) => {
   
     return initialsStr;
   }
-  
+
+  export const GETROLE =(user)=>{
+    if (user.subRole === null) {
+      return user.role
+      
+    }
+    if (user.subRole === null && user.role === null) {
+      return "Not Assigned"
+    }
+    return user.role + " " + user.subRole;
+  }
   export const PRIOTITYSTYELS = {
     high: "text-red-600",
     medium: "text-yellow-600",
@@ -83,16 +93,7 @@ export const formatDate = (date) => {
 
   ];
 
-  export const GETROLE =(user)=>{
-    if (user.subRole === null) {
-      return user.role
-      
-    }
-    if (user.subRole === null && user.role === null) {
-      return "Not Assigned"
-    }
-    return user.role + " " + user.subRole;
-  }
+
 export const TASKTYPEICON = {
   Commented: (
       <div className='w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white'>

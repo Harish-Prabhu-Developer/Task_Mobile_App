@@ -11,6 +11,7 @@ type CustomInputBoxProps = {
     iconColor?: string;
     eyeiconSize?: number;
     eyeiconColor?: string;
+    placeholderTextColor?: string;
     placeholder?: string;
     isPassword?: boolean;
     value?: string;
@@ -25,6 +26,7 @@ const CustomInputBox: React.FC<CustomInputBoxProps> = ({
     error,
     iconColor = '#000',
     eyeiconSize = 20,
+    placeholderTextColor = '#000',
     eyeiconColor = '#000',
     placeholder,
     isPassword = false,
@@ -44,6 +46,7 @@ const CustomInputBox: React.FC<CustomInputBoxProps> = ({
                 style={[styles.input, error && styles.errorInput]}
                 placeholder={placeholder}
                 value={value}
+                placeholderTextColor={placeholderTextColor}
                 onChangeText={onChangeText}
                 secureTextEntry={isPassword && !isPasswordVisible}
                 cursorColor={cursorColor}
