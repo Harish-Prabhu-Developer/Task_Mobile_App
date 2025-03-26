@@ -3,8 +3,8 @@ import React from 'react'
 
 const DashboardScreen = () => {
   return (
-    <View>
-      <Text>DashboardScreen</Text>
+    <View className='m-3'>
+      <Text className='text-2xl text-red-600 font-bold'>DashboardScreen</Text>
     </View>
   )
 }
