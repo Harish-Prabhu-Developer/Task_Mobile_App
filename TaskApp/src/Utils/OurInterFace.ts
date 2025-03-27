@@ -21,12 +21,17 @@ export interface User {
     date: string;
     tag: string;
   }
-  
+  export interface createdByProject {
+    _id: string;
+    name: string;
+    role:string;
+    email: string;
+  }
   export interface Project {
     _id: string;
     name: string;
     description: string;
-    createdBy: string;
+    createdBy: createdByProject;
     teamMembers: string[];
     startDate: string;
     tasks: string[];
@@ -382,7 +387,7 @@ export interface User {
           _id: '67bdbe79357b0b90de229557',
           name: 'Mobile App Development',
           description: 'Build a cross-platform mobile app',
-          createdBy: '67a9edafc1be67b40b7cf3dd',
+          createdBy: {_id: '67a9edafc1be67b40b7cf3dd', name: 'Harish Admin', email: 'skcbcastudent@gmail.com', role: 'Admin'},
           teamMembers: [
             '67ab3dc1d68d47ff5b59bc04',
             '67ab3da9d68d47ff5b59bbff',
@@ -447,7 +452,7 @@ export interface User {
           _id: '67bdbe79357b0b90de229557',
           name: 'Mobile App Development',
           description: 'Build a cross-platform mobile app',
-          createdBy: '67a9edafc1be67b40b7cf3dd',
+          createdBy: {_id: '67a9edafc1be67b40b7cf3dd', name: 'Harish Admin', email: 'skcbcastudent@gmail.com', role: 'Admin'},
           teamMembers: [
             '67ab3dc1d68d47ff5b59bc04',
             '67ab3da9d68d47ff5b59bbff',
@@ -512,7 +517,7 @@ export interface User {
           _id: '67bdbe79357b0b90de229557',
           name: 'Mobile App Development',
           description: 'Build a cross-platform mobile app',
-          createdBy: '67a9edafc1be67b40b7cf3dd',
+          createdBy: {_id: '67a9edafc1be67b40b7cf3dd', name: 'Harish Admin', email: 'skcbcastudent@gmail.com', role: 'Admin'},
           teamMembers: [
             '67ab3dc1d68d47ff5b59bc04',
             '67ab3da9d68d47ff5b59bbff',

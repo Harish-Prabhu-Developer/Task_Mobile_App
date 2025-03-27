@@ -10,7 +10,7 @@ const Activities = ({  task }) => {
     const [text, setText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const taskdata = useSelector((state)=>state.assigntasks.task);
-    
+
     const dispatch = useDispatch();
     const handelActivity = async () => {
       setIsLoading(true);
@@ -80,7 +80,20 @@ const Activities = ({  task }) => {
       if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
       return `${Math.floor(diffInSeconds / 31536000)} years ago`;
     };
-      
+
+    const [selectedActivity, setSelectedActivity] = useState("");
+
+    const handleFilterChange = (e) => {
+      const value = e.target.value;
+      setSelectedActivity(value);
+    
+      if (value === "Others") {
+        setText(""); // Clear text input when Others is selected
+      } else {
+        setText(value); // Set text value to selected dropdown option
+      }
+    };
+          
       const Card = ({ item, isConnected }) => {
         return (
           <div className="flex space-x-4">
@@ -140,13 +153,43 @@ const Activities = ({  task }) => {
                 <p>{item}</p>
               </div>
             ))}
-            <textarea
-              rows={10}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder='Type ......'
-              className='bg-white w-full mt-10 border border-gray-300 outline-none p-4 rounded-md focus:ring-2 ring-blue-500'
-            ></textarea>
+
+                {/* Activity */}
+                <div className="relative w-full">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Select Activity
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="project"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-200 text-gray-700 bg-white"
+                      onChange={handleFilterChange}
+                      value={selectedActivity}
+                    >
+                      <option value="" disabled>Select an Activity</option>
+                      {task.subTasks.map((SUBTASKs, index) => (
+                        <option key={index} value={SUBTASKs.title}>
+                          {SUBTASKs.title}
+                        </option>
+                      ))}
+                      <option value="Others">Others</option>
+                    </select>
+
+                  </div>
+                </div>
+
+                {/* Show textarea only when "Others" is selected */}
+                {selectedActivity === "Others" && (
+                  <textarea
+                    rows={4}
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Describe your activity..."
+                    className="bg-white w-full mt-4 border border-gray-300 rounded-lg shadow-sm p-4 focus:ring-2 focus:ring-blue-500 outline-none transition duration-200"
+                  ></textarea>
+                )}
+
+
             {isLoading ? (
               <CustomLoading />
             ) : (

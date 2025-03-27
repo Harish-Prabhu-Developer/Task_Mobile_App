@@ -83,7 +83,14 @@ export const getTasks = async (req, res) => {
     if (req.user.userLevel === "Admin" || req.user.userLevel === "Manager"||req.user.userLevel === "User") {
       const tasks = await TaskModel.find()
       .populate("assignedTo", "name email role subRole") // Populate assigned users
-      .populate("project") // Populate project name only
+      .populate({
+        path: "project",
+        select: "name description startDate endDate teamMembers createdBy updatedBy", 
+        populate: {
+          path: "createdBy",
+          select: "name email role sub", 
+        },
+      }) 
       .populate({
         path: "activities",
         populate: {
@@ -99,7 +106,14 @@ export const getTasks = async (req, res) => {
     if (req.user.userLevel.split(" ")[0] === "Junior" || req.user.userLevel.split(" ")[0] === "Senior") {
       const tasks = await TaskModel.find({ assignedTo: req.user._id })
       .populate("assignedTo", "name email role subRole") // Populate assigned users
-      .populate("project") // Populate project name only
+      .populate({
+        path: "project",
+        select: "name description startDate endDate teamMembers createdBy updatedBy", 
+        populate: {
+          path: "createdBy",
+          select: "name email role sub", 
+        },
+      }) 
       .populate({
         path: "activities",
         populate: {
@@ -121,7 +135,14 @@ export const getTask = async (req, res) => {
     if (req.user.userLevel === "Admin" || req.user.userLevel === "Manager"||req.user.userLevel === "User") {
       const task = await TaskModel.findById(taskId)
       .populate("assignedTo", "name email role subRole")
-      .populate("project")
+      .populate({
+        path: "project",
+        select: "name description startDate endDate teamMembers createdBy updatedBy", 
+        populate: {
+          path: "createdBy",
+          select: "name email role sub", 
+        },
+      }) 
       .populate({
       path: "activities",
       populate: {
@@ -135,7 +156,15 @@ export const getTask = async (req, res) => {
     if (req.user.userLevel.split(" ")[0] === "Junior" || req.user.userLevel.split(" ")[0] === "Senior") {
       const task = await TaskModel.findOne({ _id: taskId, assignedTo: req.user._id })
       .populate("assignedTo", "name email role subRole")
-      .populate("project")
+      .populate({
+        path: "project",
+        select: "name description startDate endDate teamMembers createdBy updatedBy", 
+        populate: {
+          path: "createdBy",
+          select: "name email role sub", 
+        },
+      }) 
+       
       .populate({
         path: "activities",
         populate: {
@@ -180,6 +209,7 @@ export const updateTask = async (req, res) => {
       updateQuery.$push.activities = newActivity._id;
     }
 
+    
     // ✅ Fix: Directly update stage, priority, and dueDate
     if (updates.stage) updateQuery.$set.stage = updates.stage;
     if (updates.priority) updateQuery.$set.priority = updates.priority;
@@ -264,17 +294,39 @@ export const deleteTask = async (req, res) => {
 // don't get request and send response is a normal function
 export const managingTeamMembers = async (req, res) => {
   try {
-    //get all project TeamMembers
-    const teamMembers = await ProjectModel.find({}, 'teamMembers tasks');
-    teamMembers.forEach(team => console.log("Get TeamMembers : ", team));
+    // Fetch all projects with their tasks
+    const projects = await ProjectModel.find({}, "teamMembers tasks");
     
-    //get all Task assignedTo
-    const assign = await TaskModel.find({}, 'assignedTo project');
-    console.log("Assigned : ", assign);
+    // Fetch all tasks with their assigned users and project reference
+    const tasks = await TaskModel.find({}, "assignedTo project");
     
+    // Store unique assigned users per project
+    const projectTeamMembers = {};
     
+    tasks.forEach(task => {
+      const { project, assignedTo } = task;
+      if (!projectTeamMembers[project]) {
+        projectTeamMembers[project] = new Set();
+      }
+      assignedTo.forEach(user => projectTeamMembers[project].add(user.toString()));
+    });
+
+    // Update project teamMembers based on assigned users
+    const updatePromises = projects.map(async (project) => {
+      const uniqueUsers = [...(projectTeamMembers[project._id] || [])];
+      if (uniqueUsers.length > 0) {
+        return ProjectModel.findByIdAndUpdate(
+          project._id,
+          { $set: { teamMembers: uniqueUsers } },
+          { new: true }
+        );
+      }
+    });
+
+    await Promise.all(updatePromises);
+
+    console.log("updatePromises : ",updatePromises);
   } catch (error) {
-    console.log("Error : ",error.message);
-    
+    console.log("Error:", error.message);
   }
 };

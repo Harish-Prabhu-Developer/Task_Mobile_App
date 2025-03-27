@@ -89,8 +89,9 @@ const TaskDetails = () => {
               {/* Project Metadata */}
               <div className="flex items-center gap-4 mt-4 text-sm text-gray-600">
                 <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
-                  <FaUserTie className="text-gray-500" /> 
-                  <span>Created By: {task?.project?.createdBy}</span>
+                  <FaUserTie className="text-gray-500" />
+                  {/**how to get the project creator name  */} 
+                  <span>Created By: {task?.project?.createdBy?.name}</span>
                 </div>
 
                 <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">

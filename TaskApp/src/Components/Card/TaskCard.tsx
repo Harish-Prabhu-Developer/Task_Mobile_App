@@ -75,7 +75,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
       <View className="flex flex-col gap-1 ms-4 mt-2">
       {/* Task Stage & Title */}
       <View className="flex flex-row items-center gap-2">
-        <View className={`w-4 h-4 ${TASK_TYPE[task?.stage as keyof typeof TASK_TYPE]} rounded-full `} />
+        <Text className={`w-4 h-4 ${TASK_TYPE[task?.stage as keyof typeof TASK_TYPE]} rounded-full `} />
         <Text className="line-clamp-1 text-black">{task?.title}</Text>
       </View>
 
@@ -117,8 +117,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
           {/* Assigned Users */}
           <View className='flex flex-row-reverse gap-2'>
               {task?.assignedTo?.map((user,index)=>(
-                <View className={`w-8 h-8 rounded-full flex items-center  justify-center -mr-4  ${getUniqueColor(user.name)}`}
-                      key={index}> <Text className='text-white font-bold text-sm'>{user.name.charAt(0).toUpperCase()}</Text> </View>
+                <Text className={`w-8 h-8 rounded-full flex text-center p-2 items-center  justify-center -mr-4  ${getUniqueColor(user.name)}`}
+                      key={index}> <Text className='text-white text-center m-2 font-bold text-sm'>{user.name.charAt(0).toUpperCase()}</Text> </Text>
               ))}
           </View>
           
@@ -143,7 +143,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
          
                    {/* Show Latest Sub-Task when collapsed */}
                    {!isExpanded && latestSubTask && (
-                     <View className="p-2 border rounded-lg bg-gray-50 mt-2">
+                     <View className="p-2 border border-gray-200 rounded-lg bg-gray-50 mt-2">
                        <Text className="text-sm font-medium text-black">{latestSubTask.title}</Text>
                        <View className="flex-row justify-between text-sm text-gray-600 mt-1">
                          <Text>{formatDate(latestSubTask.date)}</Text>
@@ -160,7 +160,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
                        data={task.subTasks}
                        keyExtractor={(_, index) => index.toString()}
                        renderItem={({ item }) => (
-                         <View className="p-2 border rounded-lg bg-gray-50 mt-2">
+                         <View className="p-2 border border-gray-200 rounded-lg bg-gray-50 mt-2">
                            <Text className="text-sm font-medium text-black">{item.title}</Text>
                            <View className="flex-row justify-between text-sm text-gray-600 mt-1">
                              <Text>{formatDate(item.date)}</Text>

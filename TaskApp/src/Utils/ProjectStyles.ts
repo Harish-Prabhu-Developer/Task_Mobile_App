@@ -66,14 +66,7 @@ export const TASKTYPEICON = {
 };
 */
 
-export const act_types = [
-  'Started',
-  'Completed',
-  'In Progress',
-  'Commented',
-  'Bug',
-  'Assigned',
-];
+// Removed duplicate declaration of act_types
 
 export const Enum = [
   'Completed',
@@ -138,39 +131,54 @@ export const Enum = [
   ];
 
 
-/*export const TASKTYPEICON = {
-  Commented: (
-      <View className='w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white'>
-          <Entypo name="message" size={22} color="white" />
-      </View>
+
+// Define task types explicitly
+export type TaskType = "Commented" | "Started" | "Assigned" | "Bug" | "Completed" | "In Progress";
+
+// Define type for TASKTYPEICON
+export const TASKTYPEICON: Record<TaskType, () => JSX.Element> = {
+  Commented: () =>
+    React.createElement(
+      View,
+      { className: "w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center" },
+      React.createElement(Entypo, { name: "message", size: 22, color: "white" })
     ),
-    Started: (
-      <View className='w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white'>
-      <FontAwesome name="thumbs-up" size={20} color="white" />
-      </View>
+
+  Started: () =>
+    React.createElement(
+      View,
+      { className: "w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center" },
+      React.createElement(FontAwesome, { name: "thumbs-up", size: 20, color: "white" })
     ),
-    Assigned: (
-      <View className='w-10 h-10 flex items-center justify-center rounded-full bg-gray-500 text-white'>
-      <FontAwesome name="user" size={18} color="white" />
-      </View>
+
+  Assigned: () =>
+    React.createElement(
+      View,
+      { className: "w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center" },
+      React.createElement(FontAwesome, { name: "user", size: 18, color: "white" })
     ),
-    Bug: (
-      <View className='text-red-600'>
-      <FontAwesome5 name="bug" size={24} color="red" />
-      </View>
+
+  Bug: () =>
+    React.createElement(
+      View,
+      { className: "text-red-600" },
+      React.createElement(FontAwesome5, { name: "bug", size: 24, color: "red" })
     ),
-    Completed: (
-      <View className='w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white'>
-      <MaterialIcons name="done-all" size={24} color="white" />
-      </View>
+
+  Completed: () =>
+    React.createElement(
+      View,
+      { className: "w-10 h-10 rounded-full bg-green-600 flex items-center justify-center" },
+      React.createElement(MaterialIcons, { name: "done-all", size: 24, color: "white" })
     ),
-    "In Progress": (
-      <View className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-600 text-white'>
-      <AntDesign name="sync" size={18} color="white" />
-      </View>
+
+  "In Progress": () =>
+    React.createElement(
+      View,
+      { className: "w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center" },
+      React.createElement(AntDesign, { name: "sync", size: 18, color: "white" })
     ),
-  };
-  */
+};
 /*export const act_types: string[] = [
   "Started",
   "Completed",
@@ -192,7 +200,49 @@ export const Enum: string[] = [
 ];
 
 */
+/**export const act_types = [
+  "Started",
+  "Completed",
+  "In Progress",
+  "Commented",
+  "Bug",
+  "Assigned",
+] as const; // `as const` ensures that the array values are treated as a readonly tuple
 
+export type ActType = (typeof act_types)[number]; // Extracts the types from the array
+
+export const Enum = [
+  "Completed",
+  "In Progress",
+  "Not Started",
+  "Total",
+  "completed",
+  "in progress",
+  "todo",
+  "total",
+] as const; // `as const` makes it a tuple with exact string literals
+
+export type EnumType = (typeof Enum)[number]; // Extracts the types from the Enum array
+ */
+export const act_types: Array<"Started" | "Completed" | "In Progress" | "Commented" | "Bug" | "Assigned"> = [
+  "Started",
+  "Completed",
+  "In Progress",
+  "Commented",
+  "Bug",
+  "Assigned",
+];
+
+export const statusEnum: Array<"Completed" | "In Progress" | "Not Started" | "Total" | "completed" | "in progress" | "todo" | "total"> = [
+  "Completed",
+  "In Progress",
+  "Not Started",
+  "Total",
+  "completed",
+  "in progress",
+  "todo",
+  "total",
+];
 
 // Utility function to generate a unique color for a user's logo
 export const colors = [

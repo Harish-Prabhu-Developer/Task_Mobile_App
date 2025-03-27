@@ -39,6 +39,7 @@ const taskSchema = new mongoose.Schema({
       tag: String,
     },
   ],
+
   assets: [String],
   project: {
     type: mongoose.Schema.Types.ObjectId,
