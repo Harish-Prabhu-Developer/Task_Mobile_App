@@ -7,7 +7,7 @@ import { MdTaskAlt } from "react-icons/md";
 import Activities from "../components/Tasks/Activities";
 import { getUniqueColor } from "../components/utils/logoIntoName";
 import { useDispatch, useSelector } from "react-redux";
-
+import {SUBTASKSTATUSICONS} from "../components/utils/index"
 const TaskDetails = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -150,8 +150,8 @@ const TaskDetails = () => {
                   <div className='space-y-8'>
                     {task?.subTasks?.map((el, index) => (
                       <div key={index} className='flex gap-3'>
-                        <div className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-50-200'>
-                          <MdTaskAlt className='text-violet-600' size={26} />
+                        <div>
+                            { SUBTASKSTATUSICONS[el?.status]}
                         </div>
 
                         <div className='space-y-1'>

@@ -3,17 +3,21 @@ import React from 'react'
 import TaskCard from '../Components/Card/TaskCard'
 import { FlatList } from 'react-native'
 import { Task_Data } from '../Utils/OurInterFace'
+import TopHeader from '../Components/Header/TopHeader'
 
 const TaskScreen = () => {
   return (
-    <View className="flex flex-1 bg-white p-4 mb-20">
-      <Text className="text-2xl font-bold  mb-4">Tasks</Text>
-      <FlatList
-        data={Task_Data}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <TaskCard task={item}/>}
-        showsVerticalScrollIndicator={false}
-      />
+    <View className="flex flex-1 bg-white mb-20">
+      <TopHeader/>
+      <View className='mt-4'>
+        
+        <FlatList
+          data={Task_Data}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <TaskCard task={item}/>}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </View>
   )
 }

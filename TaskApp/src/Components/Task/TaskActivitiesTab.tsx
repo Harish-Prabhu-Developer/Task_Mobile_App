@@ -8,7 +8,7 @@ interface TaskProps {
 const TaskActivitiesTab: React.FC<TaskProps> = ({task}) => {
   return (
     <ScrollView>
-      <Text>TaskActivitiesTab</Text>
+      
     </ScrollView>
   )
 }

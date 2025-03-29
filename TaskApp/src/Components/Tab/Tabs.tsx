@@ -16,10 +16,10 @@ const Tabs: React.FC<TabsProps> = ({ tabs, children }) => {
         {tabs.map((tab, index) => (
           <TouchableOpacity
             key={index}
-            className={`flex-1 p-3 bg-${activeTab === index ? 'blue-100' : 'gray-200'} rounded-t-lg`}
+            className={`flex-1 h-14 p-3 bg-${activeTab === index ? 'blue-100' : 'gray-200'} rounded-t-lg`}
             onPress={() => setActiveTab(index)}
           >
-            <Text className={`text-center ${activeTab === index ? 'text-blue-500 font-bold' : 'text-gray-500'}`}>{tab}</Text>
+            <Text className={`text-center mt-2 ${activeTab === index ? 'text-blue-500 font-bold' : 'text-gray-500'}`}>{tab}</Text>
           </TouchableOpacity>
         ))}
       </View>

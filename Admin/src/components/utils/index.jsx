@@ -1,6 +1,6 @@
 import { FaBug, FaThumbsUp, FaUser } from "react-icons/fa";
 import { GrInProgress } from "react-icons/gr";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineDoneAll, MdOutlineMessage } from "react-icons/md";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineDoneAll, MdOutlineMessage, MdTaskAlt } from "react-icons/md";
 
 export const formatDate = (date) => {
   if (!date) return ""; // Handle empty values gracefully
@@ -92,7 +92,22 @@ export const formatDate = (date) => {
     "bg-orange-500",
 
   ];
+export const SUBTASKSTATUSICONS={
+  completed:( <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white">
+    <MdTaskAlt size={26} />
+  </div> ),
+  "in progress":(
+    <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-white">
 
+    </div>
+  ),
+  todo:(
+    <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white">
+      
+    </div>
+  )
+
+}
 
 export const TASKTYPEICON = {
   Commented: (

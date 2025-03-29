@@ -69,12 +69,14 @@ export const createTask = async (req, res) => {
     }
 
     await existingProject.save();
+    managingTeamMembers();
 
     res.status(201).json({ status: "success", msg: "Task created successfully", task: newTask });
   } catch (error) {
     res.status(500).json({ status: "fail", msg: error.message });
   }
 };
+
 
 
 // Get all tasks
@@ -222,6 +224,92 @@ export const updateTask = async (req, res) => {
       };
     }
 
+
+    // Update Task stage based on subTask statuses
+    if (updates.subTasks && Array.isArray(updates.subTasks)) {
+      const allCompleted = updates.subTasks.every(subTask => subTask.status === "completed");
+      const someInProgress = updates.subTasks.some(subTask => subTask.status === "in progress");
+    
+      if (allCompleted) {
+        updateQuery.$set.stage = "completed";
+      } else if (someInProgress) {
+        updateQuery.$set.stage = "in progress";
+      } else {
+        updateQuery.$set.stage = "todo";
+      }
+    }
+    
+
+    // Update the subTask status using activities type
+    if (updates.activities && updates.activities.activity) {
+      const existingTask = await TaskModel.findById(taskId).lean(); // Fetch latest task state
+      if (existingTask && existingTask.subTasks) {
+        existingTask.subTasks = existingTask.subTasks.map(subTask => {
+          if (subTask.title === updates.activities.activity) {
+            switch (updates.activities.type) {
+              case "Completed":
+                subTask.status = "completed";
+                break;
+              case "In Progress":
+              case "Bug":
+                subTask.status = "in progress";
+                break;
+              case "Started":
+                subTask.status = "todo";
+                break;
+            }
+          }
+          return subTask;
+        });
+    
+        updateQuery.$set.subTasks = existingTask.subTasks; // Apply updates
+      }
+    }
+    
+    //get completed SubTasks and store it in completedSubTasks field
+// Get the existing task data
+
+if (existingTask?.subTasks && Array.isArray(existingTask.subTasks)) {
+  // First, apply any updates to subTasks
+  if (updates.subTasks) {
+    updateQuery.$set.subTasks = updates.subTasks;
+  }
+
+  // Re-fetch subTasks after updates
+  const updatedSubTasks = updates.subTasks || existingTask.subTasks;
+
+  // Count completed subtasks
+  const completedSubTasksCount = updatedSubTasks.filter(subTask => subTask.status === "completed").length;
+  updateQuery.$set.completedSubTasks = completedSubTasksCount;
+}
+    
+    //update Task stage on using SubTask with activities type
+    if (updates.activities?.type) {
+      switch (updates.activities.type) {
+        case "Started":
+        case "In Progress":
+          updateQuery.$set.stage = "in progress";
+          await ProjectModel.findByIdAndUpdate(existingTask.project, { $set: { status: "In Progress" } });
+          break;
+        case "Completed":
+          updateQuery.$set.stage = "completed";
+          const totalSubTasks = existingTask.subTasks?.length || 0;
+          const completedSubTasks = existingTask.subTasks?.filter(sub => sub.status === "completed").length || 0;
+    
+          // If all subtasks are completed, mark project as completed
+          if (totalSubTasks > 0 && completedSubTasks === totalSubTasks) {
+            await ProjectModel.findByIdAndUpdate(existingTask.project, { $set: { status: "Completed" } });
+          }
+          break;
+        default:
+          updateQuery.$set.stage = "todo";
+          await ProjectModel.findByIdAndUpdate(existingTask.project, { $set: { status: "Not Started" } });
+      }
+    }
+    
+    
+    
+
     // ✅ Fix: Handle assigned users correctly
     if (updates.assignedTo) {
       updateQuery.$set.assignedTo = updates.assignedTo;
@@ -249,6 +337,7 @@ export const updateTask = async (req, res) => {
       return res.status(400).json({ status: "fail", msg: "No valid update fields provided" });
     }
 
+    managingTeamMembers();
     // Update task and return the updated document
     const updatedTask = await TaskModel.findByIdAndUpdate(taskId, updateQuery, { new: true })
       .populate("assignedTo", "name email role subRole")

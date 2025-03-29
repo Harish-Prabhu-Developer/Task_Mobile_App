@@ -37,9 +37,17 @@ const taskSchema = new mongoose.Schema({
       title: String,
       date: Date,
       tag: String,
+      status: {
+        type: String,
+        default: "todo",
+        enum: ["todo", "in progress", "completed"],
+      },
     },
   ],
-
+ completedSubTasks: {
+    type: Number,
+    default: 0,
+  },
   assets: [String],
   project: {
     type: mongoose.Schema.Types.ObjectId,
