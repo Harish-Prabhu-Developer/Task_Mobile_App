@@ -1,7 +1,7 @@
 import { FaBug, FaThumbsUp, FaUser } from "react-icons/fa";
 import { GrInProgress } from "react-icons/gr";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineDoneAll, MdOutlineMessage, MdTaskAlt } from "react-icons/md";
-
+import {RiTodoFill} from "react-icons/ri"
 export const formatDate = (date) => {
   if (!date) return ""; // Handle empty values gracefully
   
@@ -98,12 +98,12 @@ export const SUBTASKSTATUSICONS={
   </div> ),
   "in progress":(
     <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-white">
-
+    <GrInProgress size={14} />    
     </div>
   ),
   todo:(
     <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white">
-      
+      <RiTodoFill />
     </div>
   )
 

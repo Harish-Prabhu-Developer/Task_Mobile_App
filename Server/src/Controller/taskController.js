@@ -266,22 +266,24 @@ export const updateTask = async (req, res) => {
       }
     }
     
-    //get completed SubTasks and store it in completedSubTasks field
-// Get the existing task data
-
+ // Get the existing task data
 if (existingTask?.subTasks && Array.isArray(existingTask.subTasks)) {
-  // First, apply any updates to subTasks
-  if (updates.subTasks) {
+  // Ensure subTasks update is an array
+  if (updates.subTasks && Array.isArray(updates.subTasks)) {
     updateQuery.$set.subTasks = updates.subTasks;
   }
 
-  // Re-fetch subTasks after updates
-  const updatedSubTasks = updates.subTasks || existingTask.subTasks;
+  // Re-fetch subTasks after updates, ensuring it's always an array
+  const updatedSubTasks = Array.isArray(updates.subTasks) ? updates.subTasks : existingTask.subTasks;
 
-  // Count completed subtasks
-  const completedSubTasksCount = updatedSubTasks.filter(subTask => subTask.status === "completed").length;
+  // Count completed subtasks safely
+  const completedSubTasksCount = Array.isArray(updatedSubTasks)
+    ? updatedSubTasks.filter(subTask => subTask.status === "completed").length
+    : 0;
+
   updateQuery.$set.completedSubTasks = completedSubTasksCount;
 }
+
     
     //update Task stage on using SubTask with activities type
     if (updates.activities?.type) {
