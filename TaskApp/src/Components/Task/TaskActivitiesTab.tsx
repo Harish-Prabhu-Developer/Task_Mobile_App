@@ -1,15 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Task } from '../../Utils/OurInterFace';
-import { ScrollView } from 'react-native';
-interface TaskProps {
-  task: Task;
-}
-const TaskActivitiesTab: React.FC<TaskProps> = ({task}) => {
+
+const TaskActivitiesTab = () => {
   return (
-    <ScrollView>
-      
-    </ScrollView>
+    <View>
+      <Text>TaskActivitiesTab</Text>
+    </View>
   )
 }
 

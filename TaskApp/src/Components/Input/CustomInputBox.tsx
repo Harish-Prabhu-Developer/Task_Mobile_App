@@ -80,6 +80,8 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
+        color: '#000',
+        fontSize: 16,
     },
     errorInput: {
         borderColor: 'red',
