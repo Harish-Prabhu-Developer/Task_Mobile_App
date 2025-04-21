@@ -4,6 +4,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import React, { Component } from 'react';
 
 type PriorityStylesType = {
@@ -137,48 +138,71 @@ export type TaskType = "Commented" | "Started" | "Assigned" | "Bug" | "Completed
 
 // Define type for TASKTYPEICON
 export const TASKTYPEICON: Record<TaskType, () => JSX.Element> = {
-  Commented: () =>
-    React.createElement(
-      View,
-      { className: "w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center" },
-      React.createElement(Entypo, { name: "message", size: 22, color: "white" })
-    ),
+  Commented: () => (
+    <View className="w-10 h-10 rounded-full bg-violet-600 items-center justify-center">
+      <Entypo name="message" size={22} color="white" />
+    </View>
+  ),
 
-  Started: () =>
-    React.createElement(
-      View,
-      { className: "w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center" },
-      React.createElement(FontAwesome, { name: "thumbs-up", size: 20, color: "white" })
-    ),
+  Started: () => (
+    <View className="w-10 h-10 rounded-full bg-blue-600 items-center justify-center">
+      <FontAwesome name="thumbs-up" size={20} color="white" />
+    </View>
+  ),
 
-  Assigned: () =>
-    React.createElement(
-      View,
-      { className: "w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center" },
-      React.createElement(FontAwesome, { name: "user", size: 18, color: "white" })
-    ),
+  Assigned: () => (
+    <View className="w-10 h-10 rounded-full bg-gray-500 items-center justify-center">
+      <FontAwesome name="user" size={18} color="white" />
+    </View>
+  ),
 
-  Bug: () =>
-    React.createElement(
-      View,
-      { className: "text-red-600" },
-      React.createElement(FontAwesome5, { name: "bug", size: 24, color: "red" })
-    ),
+  Bug: () => (
+    <View className="w-10 h-10 rounded-full bg-white items-center justify-center">
+      <FontAwesome5 name="bug" size={24} color="red" />
+    </View>
+  ),
 
-  Completed: () =>
-    React.createElement(
-      View,
-      { className: "w-10 h-10 rounded-full bg-green-600 flex items-center justify-center" },
-      React.createElement(MaterialIcons, { name: "done-all", size: 24, color: "white" })
-    ),
+  Completed: () => (
+    <View className="w-10 h-10 rounded-full bg-green-600 items-center justify-center">
+      <MaterialIcons name="done-all" size={24} color="white" />
+    </View>
+  ),
 
-  "In Progress": () =>
-    React.createElement(
-      View,
-      { className: "w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center" },
-      React.createElement(AntDesign, { name: "sync", size: 18, color: "white" })
-    ),
+  "In Progress": () => (
+    <View className="w-10 h-10 rounded-full bg-yellow-600 items-center justify-center">
+      <FontAwesome name="hourglass-end" size={18} color="white" />
+    </View>
+  ),
 };
+
+
+// Define SubTaskStatusType
+export type SubTaskStatusType = "completed" | "in progress" | "todo";
+
+// Define SUBTASKSTATUSICONS for React Native
+export const SUBTASKSTATUSICONS: Record<SubTaskStatusType, () => JSX.Element> = {
+  completed: () => (
+    <View className="w-10 h-10 rounded-full bg-green-600 items-center justify-center">
+      <MaterialIcons name="task-alt" size={24} color="white" />
+    </View>
+  ),
+
+  "in progress": () => (
+    <View className="w-10 h-10 rounded-full bg-yellow-600 items-center justify-center">
+      <FontAwesome name="hourglass-end" size={18} color="white" />
+    </View>
+  ),
+
+  todo: () => (
+    <View className="w-10 h-10 rounded-full bg-blue-600 items-center justify-center">
+      <FontAwesome5 name="clipboard-list" size={20} color="white" />
+    </View>
+  ),
+};
+
+
+
+
 /*export const act_types: string[] = [
   "Started",
   "Completed",

@@ -87,7 +87,7 @@ export const getTasks = async (req, res) => {
       .populate("assignedTo", "name email role subRole") // Populate assigned users
       .populate({
         path: "project",
-        select: "name description startDate endDate teamMembers createdBy updatedBy", 
+         
         populate: {
           path: "createdBy",
           select: "name email role sub", 
