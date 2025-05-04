@@ -105,14 +105,18 @@ const dispatch = useDispatch();
         </h4>
         <TaskDueCompletedChart/>
       </div>
+      {(Decodetoken?.userLevel === "Admin" || Decodetoken?.userLevel === "Manager") && (
+        <>
+            {/* Task Completion By Team Chart Section */}
+              <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
+              <h4 className='text-xl text-gray-600 font-semibold mb-4'>
+                Chart by Task Completion By Team
+              </h4>
+              <TaskCompletionByTeamChart/>
+            </div>
+        </>
+      )}
 
-    {/* Task Completion By Team Chart Section */}
-    <div className='w-full bg-white my-16 p-4 rounded shadow-sm'>
-        <h4 className='text-xl text-gray-600 font-semibold mb-4'>
-          Chart by Task Completion By Team
-        </h4>
-        <TaskCompletionByTeamChart/>
-      </div>
 
    
   <>

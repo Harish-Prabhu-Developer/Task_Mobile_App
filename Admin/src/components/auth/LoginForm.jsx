@@ -100,6 +100,7 @@ const LoginForm = ({ onForgetPassword, onLoginSuccess }) => {
 
     const credentials = { email, password };
     dispatch(loginUser(credentials));  // Dispatch action 🚀
+    console.log("Login action dispatched with credentials:", credentials);
     if (OnLoginStatus === "Login success") {
       console.log("Login success, navigating to dashboard...");
       navigate('/dashboard');

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Image,
 } from "react-native";
@@ -13,7 +12,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../Constants/Theme";
-
+import { AppDispatch } from "../Redux/Store";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../Redux/Slice/Auth/authSlice";
+import { API_URL } from "@env";
+import { LoginCredentials } from "../Utils/OurInterFace";
 const LoginScreen = () => {
   const SECRET_KEY = "remembermeSECRETKEYSWOMBTECHNOLOGIES";
   const [email, setEmail] = useState("");
@@ -22,7 +25,7 @@ const LoginScreen = () => {
   const [passError, setPassError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
-
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     const loadSavedCredentials = async () => {
       try {
@@ -73,8 +76,18 @@ const LoginScreen = () => {
     }
 
     if (valid) {
+      console.log("API_URL", API_URL);
       console.log("Login Data:", { email, password, rememberMe });
-      navigation.navigate("Home");
+      const credentials:any = {email:email,password:password};
+      const res= await dispatch(loginUser(credentials)).unwrap();
+      console.log("Login Response:", res);
+      //navigation.navigate("Home");
+      if (res.status==="success" &&res.msg==="OTP sent to the email") {
+        navigation.navigate("OTPScreen",{email:email});        
+      }else if(res.status==="success" &&res.msg==="Login success"){
+        navigation.navigate("Home");
+      }
+
 
       try {
         if (rememberMe) {

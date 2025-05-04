@@ -1,22 +1,30 @@
 import { Text, View, TouchableOpacity, FlatList } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TaskCard from "../Components/Card/TaskCard";
-import { Task_Data } from "../Utils/OurInterFace";
+import { Task, Task_Data } from "../Utils/OurInterFace";
 import TopHeader from "../Components/Header/TopHeader";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchtasks } from "../Redux/Slice/AssignTask/AssignTaskSlice";
+import { AppDispatch } from "../Redux/Store";
 const TaskScreen = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("All Tasks");
-
+  const dispatch =useDispatch<AppDispatch>();
   const filters = ["All Tasks", "ToDo", "In Progress", "Completed"];
 
+  useEffect(() => {
+    dispatch(fetchtasks());
+  }, [dispatch]);
+  const tasks:Task[]=useSelector((state:any)=>state.assignTask.tasks);
+
   // Function to filter tasks based on selection
-  const filteredTasks = Task_Data.filter((task) => {
+  const filteredTasks = tasks.filter((task) => {
     if (selectedFilter === "All Tasks") return true;
     return task.stage.toLowerCase() === selectedFilter.toLowerCase();
   });
 
+   
   const handleFilterSelect = (filter: string) => {
     setSelectedFilter(filter);
     setDropdownVisible(false);
@@ -58,7 +66,7 @@ const TaskScreen = () => {
       </View>
 
       {/* Task List */}
-      <View className="mt-4">
+      <View className="mt-2 mb-24">
         {filteredTasks.length > 0 ? (
           <FlatList
             data={filteredTasks}
@@ -72,6 +80,7 @@ const TaskScreen = () => {
           </Text>
         )}
       </View>
+
     </View>
   );
 };

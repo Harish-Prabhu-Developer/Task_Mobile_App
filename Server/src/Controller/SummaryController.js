@@ -2,8 +2,12 @@ import UserModel from "../Model/UserModel.js";
 import TaskModel from "../Model/TaskModel.js";
 import ProjectModel from "../Model/ProjectModel.js";
 import ActivitiesModel from "../Model/ActivitiesModel.js";
+import mongoose from "mongoose";
 export const getSummaryData = async (req, res) => {
   try {
+  //request user data
+  const user = req.user;
+  console.log("userId : ",user);
 
     // Task Due vs Completed Data
     const taskDueCompletedAggregation = await TaskModel.aggregate([
@@ -126,6 +130,11 @@ export const getSummaryData = async (req, res) => {
         },
       },
     ]);
+
+
+
+
+
 // Task status Total Count
 const TaskStatusTotalAggregation = await TaskModel.aggregate([
     {
@@ -161,21 +170,140 @@ const TaskStatusTotalAggregation = await TaskModel.aggregate([
   };
   
   console.log({ TaskStatusTotal, ProjectStatusTotal });
+
+    // Priority Chart Data
+    const UserpriorityChartData = await TaskModel.aggregate([
+      {
+        $match: {
+          assignedTo: new mongoose.Types.ObjectId(user._id),  // ✅ add `new`
+        },
+      },
+      {
+        $group: {
+          _id: "$priority",
+          total: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          total: 1,
+        },
+      },
+    ]);
+
+// Task status Total Count
+const UserTaskStatusTotalAggregation = await TaskModel.aggregate([
+  {
+    $match: {
+      assignedTo: new mongoose.Types.ObjectId(user._id),  // ✅ add `new`
+    },
+  },
+  {
+    $group: {
+      _id: "$stage",
+      total: { $sum: 1 },
+    },
+  },
+]);
+
+const UserTaskStatusTotal = {
+  completed: UserTaskStatusTotalAggregation.find((s) => s._id === "completed")?.total || 0,
+  "in progress": UserTaskStatusTotalAggregation.find((s) => s._id === "in progress")?.total || 0,
+  todo: UserTaskStatusTotalAggregation.find((s) => s._id === "todo")?.total || 0,
+  total: UserTaskStatusTotalAggregation.reduce((acc, cur) => acc + cur.total, 0),
+};
+
+    // Task Due vs Completed Data
+    const UsertaskDueCompletedAggregation = await TaskModel.aggregate([
+      {
+        $match: {
+          assignedTo: new mongoose.Types.ObjectId(user._id),  // ✅ add `new`
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$dueDate" },
+          due: { $sum: 1 },
+          completed: {
+            $sum: {
+              $cond: [{ $eq: ["$stage", "completed"] }, 1, 0],
+            },
+          },
+        },
+      },
+      { $sort: { "_id": 1 } },
+    ]);
+
+    const UsertaskDueCompletedData = UsertaskDueCompletedAggregation.map((item) => ({
+      month: new Date(0, item._id - 1).toLocaleString("en", { month: "short" }),
+      due: item.due,
+      completed: item.completed,
+    }));
+
+        // Task Status Data
+        const UsertaskStatusData = await TaskModel.aggregate([
+          {
+            $match: {
+              assignedTo: new mongoose.Types.ObjectId(user._id),  // ✅ add `new`
+            },
+          },
+          {
+            $group: {
+              _id: "$stage",
+              value: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              name: "$_id",
+              value: 1,
+            },
+          },
+        ]);
+  // Project status Total Count
+    if (user.userLevel==="Admin"||user.userLevel==="Manager") {
+      return res.json({
+        ProjectProgressData: projectProgressData,
+        TaskStatusData: taskStatusData,
+        TaskCompletionByTeamData: taskCompletionByTeamData,
+        TaskDueCompletedData: taskDueCompletedData,
+        PriorityChartData: priorityChartData,
+        TaskStatusTotal: TaskStatusTotal,
+        ProjectStatusTotal:ProjectStatusTotal,
+      });
+    }else{
+      return res.json({
+        TaskStatusData: UsertaskStatusData,
+        TaskDueCompletedData: UsertaskDueCompletedData,
+        PriorityChartData: UserpriorityChartData,
+        TaskStatusTotal: UserTaskStatusTotal,
+      });
   
-    res.json({
-      ProjectProgressData: projectProgressData,
-      TaskStatusData: taskStatusData,
-      TaskCompletionByTeamData: taskCompletionByTeamData,
-      TaskDueCompletedData: taskDueCompletedData,
-      PriorityChartData: priorityChartData,
-      TaskStatusTotal: TaskStatusTotal,
-      ProjectStatusTotal:ProjectStatusTotal,
-    });
-  } catch (error) {
+    }
+} catch (error) {
     console.error("Summary Error : ",error.message);
     res.status(500).json({ msg: "Server error", error:error.message });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Report data
 export const getReportSummary = async (req, res) => {

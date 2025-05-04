@@ -8,6 +8,7 @@ import Activities from "../components/Tasks/Activities";
 import { getUniqueColor } from "../components/utils/logoIntoName";
 import { useDispatch, useSelector } from "react-redux";
 import {SUBTASKSTATUSICONS} from "../components/utils/index"
+import { CONFIG } from "../Config";
 const TaskDetails = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -178,13 +179,13 @@ const TaskDetails = () => {
             <p className="text-lg font-semibold">ASSETS</p>
             <div className="grid grid-cols-2 gap-4">
               {task?.assets?.map((el, index) => (
-                <img key={index} src={`http://localhost:3000/${el}`} alt={task?.title} className="w-full rounded h-28 md:h-36 transition-all hover:scale-110" />
-              ))}
+                <img key={index} src={`${CONFIG.BASE_URL}/${el}`} alt={task?.title} className="w-full rounded h-28 md:h-36 transition-all hover:scale-110" />
+             ))}
             </div>
           </div>
         </div>
       ) : (
-        <Activities  task={task} />
+        <Activities task={task}/>
       )}
     </div>
   );

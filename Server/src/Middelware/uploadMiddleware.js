@@ -12,7 +12,7 @@ const ensureDirectoryExistence = (dirPath) => {
 // Set Storage Engine
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        let uploadPath = "src/uploads/";
+        let uploadPath = "uploads/";
 
         // Check if it's a profile picture upload
         if (req.baseUrl.includes("/users")) {

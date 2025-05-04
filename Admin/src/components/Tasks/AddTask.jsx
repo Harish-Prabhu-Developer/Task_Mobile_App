@@ -88,27 +88,58 @@ const AddTask = ({ closeAddTasksDialog, TasksToEdit, onSubmit, onOpen,formStage 
   };
 
   const handleFileChange = (e) => {
-    const files = e.target.files;
+    const files = Array.from(e.target.files);
     if (files.length > 0) {
-      const fileArray = Array.from(files);
-      console.log("Uploaded Files:", fileArray);
+      console.log("Uploaded Files:", files);
+  
+      files.forEach((file, index) => {
+        console.log(`File ${index + 1}: ${file.name}`);
+      });
+  
       setFormData((prev) => ({
         ...prev,
-        assets: [...prev.assets, ...fileArray.map((file) => file.path)],
+        assets: [...prev.assets, ...files], // store File objects
       }));
-      fileInputRef.current.value = null;
+  
+      fileInputRef.current.value = null; // Reset input
     }
   };
+  
+  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
   
     if (TasksToEdit) {
       // Updating an existing task
+     
       onSubmit({ ...TasksToEdit, ...formData });
     } else {
+//      console.log("Creating a new task:", formData);
       // Creating a new task
-      onSubmit(formData);
+
+      const form = new FormData();
+      form.append("title", formData.title);
+      form.append("description", formData.description);
+      form.append("project", formData.project);
+      form.append("priority", formData.priority);
+      form.append("stage", formData.stage);
+      form.append("dueDate", formData.dueDate);
+    
+      formData.assignedTo.forEach((id) => form.append("assignedTo[]", id));
+      formData.assets.forEach((file) => form.append("assets", file));
+    
+      // DEBUG: Print form data content
+      console.log("Submitting FormData:");
+      for (let [key, value] of form.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: ${value.name} (${value.type}, ${value.size} bytes)`);
+        } else {
+          console.log(`${key}: ${value}`);
+        }
+      }
+    
+      onSubmit(form);  
     }
   };
   

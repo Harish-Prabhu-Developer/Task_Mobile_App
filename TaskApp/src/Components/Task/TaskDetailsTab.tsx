@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { Task } from '../../Utils/OurInterFace';
 import {
@@ -12,7 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import SubTaskCard from '../Card/SubTaskCard';
 import { FlatList } from 'react-native-gesture-handler';
-
+import { API_URL } from '@env';
 interface TaskProps {
   task?: Task;
 }
@@ -153,6 +153,25 @@ const TaskDetailsTab: React.FC<TaskProps> = ({ task }) => {
           renderItem={({ item }) => <SubTaskCard subTask={item} />}
           scrollEnabled={false} 
         />
+      </View>
+      {/*Assets*/}
+      <View className='mt-6 mb-16'>
+        <Text className="text-lg mt-8 mb-4 font-bold text-gray-600 uppercase">
+          <MaterialCommunityIcons name="folder" size={20} color="black" />{' '}
+          Assets
+        </Text>
+
+        {task.assets?.length === 0 ? (
+          <Text className="text-gray-500 text-center">No Assets Found</Text>
+        ) : (
+          <>
+            <View className="grid grid-cols-2 gap-4">
+                          {task?.assets?.map((el, index) => (
+                            <ImageBackground key={index} src={`${API_URL}/${el}`} alt={task?.title} className="w-full rounded h-28 md:h-36 transition-all hover:scale-110" />
+                         ))}
+                        </View>
+          </>
+        )}
       </View>
 
       </View>

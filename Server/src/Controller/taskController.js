@@ -3,6 +3,7 @@ import TaskModel from "../Model/TaskModel.js";
 import ProjectModel from "../Model/ProjectModel.js";
 import UserModel from "../Model/UserModel.js";
 import ActivitiesModel from "../Model/ActivitiesModel.js";
+import NotificationModel from "../Model/NotificationModel.js";
 
 // Create a new task with file uploads
 export const createTask = async (req, res) => {
@@ -31,12 +32,20 @@ export const createTask = async (req, res) => {
     }
 
     const assetFiles = req.files?.map(file => file.path) || [];
+ 
     const activity = await ActivitiesModel.create({
       type: "Assigned",
       activity: "Task assigned",
       by: req.user._id
     });
 
+    const textmsg= `${req.user.name} assigned you to a new task`;
+    const notification = await NotificationModel.create({
+      team: assignedTo,
+      text: textmsg,
+      task: activity._id,
+      notiType: "alert",
+    });
     // Create the task
     const newTask = new TaskModel({
       title,
@@ -52,7 +61,7 @@ export const createTask = async (req, res) => {
     });
 
     await newTask.save();
-
+    await notification.save(); // Save notification
     existingProject.updatedBy = req.user._id;
     existingProject.tasks.push(newTask._id);
 
@@ -340,6 +349,23 @@ if (existingTask?.subTasks && Array.isArray(existingTask.subTasks)) {
     }
 
     managingTeamMembers();
+    // ✨ Check and handle subTasks conflict
+const willPushSubTasks = updateQuery.$push.subTasks;
+const willSetSubTasks = updateQuery.$set.subTasks;
+if (willPushSubTasks && willSetSubTasks) {
+  delete updateQuery.$push.subTasks;
+}
+
+// ✨ First safe update
+
+
+// ✨ Second update if needed
+if (willPushSubTasks) {
+  await TaskModel.findByIdAndUpdate(taskId, {
+    $push: { subTasks: willPushSubTasks }
+  });
+}
+
     // Update task and return the updated document
     const updatedTask = await TaskModel.findByIdAndUpdate(taskId, updateQuery, { new: true })
       .populate("assignedTo", "name email role subRole")
@@ -419,5 +445,20 @@ export const managingTeamMembers = async (req, res) => {
     console.log("updatePromises : ",updatePromises);
   } catch (error) {
     console.log("Error:", error.message);
+  }
+};
+
+
+
+//get the notification request users
+export const getNotification = async (req, res) => {
+  try {
+    const notifications = await NotificationModel.find({ team: req.user._id })
+      .populate("team", "name email role subRole")
+      .populate("task")
+      .sort({ createdAt: -1 });
+    res.status(200).json(notifications);
+  } catch (error) {
+    res.status(500).json({ status:"fail", msg: error.message });
   }
 };

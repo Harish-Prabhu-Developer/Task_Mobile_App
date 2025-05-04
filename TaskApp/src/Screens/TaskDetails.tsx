@@ -24,7 +24,7 @@ const TaskDetails = () => {
         
         {/* Activities Tab */}
         <View>
-          <TaskActivitiesTab task={task}/>
+          <TaskActivitiesTab taskActivity={task?.activities} task={task}/>
         </View>
       </Tabs>
     </View>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,9 @@ import {
 } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { AppDispatch, RootState } from "../../Redux/Store";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotifications } from "../../Redux/Slice/AssignTask/AssignTaskSlice";
 
 const NotificationPanel = () => {
   const [open, setOpen] = useState(false);
@@ -76,7 +79,14 @@ const NotificationPanel = () => {
       },
   ];
 
-
+   const dispatch = useDispatch<AppDispatch>();
+    useEffect(() => {
+      const getNotifications = async () => {
+        await dispatch(fetchNotifications());
+      };
+      getNotifications();
+    }, [dispatch])
+    const notificationsData=useSelector((state:RootState) => state.assignTask.notifications);
   const ICONS: Record<string, JSX.Element> = {
     alert: <FontAwesome5 name="bell" size={20} className="text-gray-600" />,
     message: <FontAwesome5 name="comment" size={20} className="text-gray-600" />,
@@ -111,9 +121,9 @@ const NotificationPanel = () => {
       <TouchableOpacity onPress={togglePanel} className="relative">
         <View className="w-8 h-8 flex items-center justify-center relative">
           <MaterialIcons name="notifications" size={28} color="white" />
-          {data.length > 0 && (
+          {notificationsData.length > 0 && (
             <View className="absolute top-0 right-0 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
-              <Text className="text-xs text-white font-bold">{data.length}</Text>
+              <Text className="text-xs text-white font-bold">{notificationsData.length}</Text>
             </View>
           )}
         </View>
@@ -124,12 +134,18 @@ const NotificationPanel = () => {
 
           {/* Scrollable Notification List */}
           <View className="h-72 overflow-hidden flex-grow">
-            <FlatList
-              data={data}
+          <FlatList
+              data={notificationsData}
               keyExtractor={(item) => item._id}
               renderItem={NotificationItemRenderer}
               showsVerticalScrollIndicator={true}
+              ListEmptyComponent={
+                <View className="flex items-center justify-center h-72">
+                  <Text className="text-gray-400 text-base font-medium">No Notifications available</Text>
+                </View>
+              }
             />
+
           </View>
 
           <View className="flex flex-row justify-between mt-4 w-full gap-2">

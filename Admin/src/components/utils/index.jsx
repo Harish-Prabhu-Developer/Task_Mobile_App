@@ -8,7 +8,7 @@ export const formatDate = (date) => {
   const parsedDate = new Date(date); // Convert string to Date object
 
   if (isNaN(parsedDate.getTime())) {
-    console.error("Invalid date:", date); // Debugging output
+    console.warn("Invalid date:", date); // Debugging output
     return ""; // Return an empty string for invalid dates
   }
 

@@ -109,7 +109,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
               {/* Subtasks */}
               <View className="flex flex-row gap-1 items-center text-gray-600">
                 <FontAwesome5 name="list" size={14} />
-                <Text className="text-sm">{task?.subTasks?.length}</Text>
+                <Text className="text-sm">{task?.completedSubTasks}/{task?.subTasks?.length}</Text>
               </View>
             </View>
           </View>

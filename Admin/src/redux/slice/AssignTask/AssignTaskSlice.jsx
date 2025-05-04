@@ -87,11 +87,26 @@ export const deleteTask = createAsyncThunk(
     }
   );
   
+  // Fetch all Notifications
+  export const fetchNotifications = createAsyncThunk(
+    "tasks/getNotification",
+    async (_, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${CONFIG.BASE_URL}/taskapp/tasks/getnotification`, getHeaders());
+        console.log("Tasks getNotification Response:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Tasks getNotification Error:", error);
+        return rejectWithValue(error.response?.data?.msg || "Failed to fetch Notifications");
+      }
+    }
+  )
   //Assign Task Slice
   const AssignTaskSlice = createSlice({
     name: "assignTask",
     initialState: {
       tasks: [],
+      notifications: [],
       task:null,
       status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
       error: null,
@@ -158,7 +173,10 @@ export const deleteTask = createAsyncThunk(
         .addCase(deleteTask.rejected, (state, action) => {
           state.status = "failed";
           state.error = action.payload;
-        });
+        })
+        .addCase(fetchNotifications.fulfilled,(state,action)=>{
+          state.notifications=action.payload;
+        })
     },
   });
 

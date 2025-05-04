@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 app.use("/taskapp",Router)
 
 // ✅ Serve uploaded files statically
-app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
+app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 app.get("/", (req, res) => res.status(200).json("Welcome to TaskApp!"));
 

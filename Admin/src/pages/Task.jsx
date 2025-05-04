@@ -71,7 +71,26 @@ const handleTaskSubmit = async (Taskdata) => {
   if (taskToEdit&&formStage==="Edit") {
     console.log("Edit Task",Taskdata._id);
     try {
-      const res =await dispatch(updateTask({ taskId: taskToEdit._id, taskData: Taskdata }));
+      const form = new FormData();
+      form.append("title", Taskdata.title);
+      form.append("description", Taskdata.description);
+      form.append("project", Taskdata.project);
+      form.append("priority", Taskdata.priority);
+      form.append("stage", Taskdata.stage);
+      form.append("dueDate", Taskdata.dueDate);
+    
+      Taskdata.assignedTo.forEach((id) => form.append("assignedTo[]", id));
+      Taskdata.assets.forEach((file) => form.append("assets", file));
+      // DEBUG: Print form data content
+      console.log("Submitting FormData:");
+      for (let [key, value] of form.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: ${value.name} (${value.type}, ${value.size} bytes)`);
+        } else {
+          console.log(`${key}: ${value}`);
+        }
+      } 
+      const res = await dispatch(updateTask({ taskId: taskToEdit._id, taskData: form }));
       console.log("Task Update Response:",res);
       if (res.payload.status==="success"&&res.payload.msg==="Task updated successfully") {
         toast.success(res.payload.msg);

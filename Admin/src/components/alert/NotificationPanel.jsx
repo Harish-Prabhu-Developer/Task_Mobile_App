@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import { HiBellAlert } from "react-icons/hi2";
 import { MdNotifications } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotifications } from "../../redux/slice/AssignTask/AssignTaskSlice";
 
 const data = [
   {
@@ -41,7 +43,21 @@ const NotificationPanel = ({ styles }) => {
   const [open, setOpen] = useState(false);
 
   const togglePanel = () => setOpen(!open);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getNotifications = async () => {
+      await dispatch(fetchNotifications());
+    };
+    getNotifications();
+  }, [dispatch])
+  const notificationsData=useSelector((state) => state.assigntasks.notifications);
 
+  /*const datas = notificationsData?.filter((item) => item.isRead.length === 0);
+  const isRead = notificationsData?.filter((item) => item.isRead.length > 0);
+  const allNotifications = [...datas, ...isRead];
+  const unreadCount = allNotifications.filter((item) => item.isRead.length === 0).length;
+  const readCount = allNotifications.filter((item) => item.isRead.length > 0).length;
+  const totalCount = unreadCount + readCount;*/
   return (
     <div className="relative">
       <button
@@ -50,54 +66,62 @@ const NotificationPanel = ({ styles }) => {
       >
         <div className="w-8 h-8 flex items-center justify-center text-gray-800 relative">
           <MdNotifications className={`${styles} text-white`} />
-          {data?.length > 0 && (
+          {notificationsData?.length > 0 && (
             <span className="absolute text-center top-0 right-1 text-xs text-white font-semibold w-4 h-4 rounded-full bg-red-600">
-              {data?.length}
+              {notificationsData?.length}
             </span>
           )}
         </div>
       </button>
-
-      {open && (
-        <div className="absolute -right-10 md:-right-2  z-10 mt-5 w-80 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
-          <div className="p-4">
-            {data.slice(0, 5).map((item, index) => (
-              <div
-                key={item._id + index}
-                className="group flex gap-x-4 rounded-lg p-4 hover:bg-gray-50"
-              >
-                <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-gray-200 group-hover:bg-white">
-                  {ICONS[item.notiType]}
-                </div>
-                <div className="cursor-pointer">
-                  <div className="flex items-center gap-3 font-semibold text-gray-900 capitalize">
-                    <p>{item.notiType}</p>
-                    <span className="text-xs font-normal lowercase">
-                      {timeAgo(item.createdAt)}
-                    </span>
-                  </div>
-                  <p className="line-clamp-1 mt-1 text-gray-600">{item.text}</p>
-                </div>
+          {/**No Notifications data */}
+   
+          {open && (
+  <div className="absolute -right-10 md:-right-2 z-10 mt-5 w-80 bg-white rounded-xl shadow-lg ring-1 ring-gray-900/5">
+    <div className="p-4">
+      {notificationsData?.length > 0 ? (
+        notificationsData.slice(0, 5).map((item, index) => (
+          <div
+            key={item._id + index}
+            className="group flex gap-x-4 rounded-lg p-4 hover:bg-gray-50"
+          >
+            <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-gray-200 group-hover:bg-white">
+              {ICONS[item.notiType]}
+            </div>
+            <div className="cursor-pointer">
+              <div className="flex items-center gap-3 font-semibold text-gray-900 capitalize">
+                <p>{item.notiType}</p>
+                <span className="text-xs font-normal lowercase">
+                  {timeAgo(item.createdAt)}
+                </span>
               </div>
-            ))}
+              <p className="line-clamp-1 mt-1 text-gray-600">{item.text}</p>
+            </div>
           </div>
-
-          <div className="grid grid-cols-2 divide-x bg-gray-50">
-            <button
-              onClick={togglePanel}
-              className="p-3 font-semibold text-blue-600 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => console.log("Marking all as read")}
-              className="p-3 font-semibold text-blue-600 hover:bg-gray-100"
-            >
-              Mark All Read
-            </button>
-          </div>
+        ))
+      ) : (
+        <div className="flex items-center justify-center py-10 text-gray-500 font-medium">
+          No Notifications available
         </div>
       )}
+    </div>
+
+    <div className="grid grid-cols-2 divide-x bg-gray-50">
+      <button
+        onClick={togglePanel}
+        className="p-3 font-semibold text-blue-600 hover:bg-gray-100"
+      >
+        Cancel
+      </button>
+      <button
+        onClick={() => console.log("Marking all as read")}
+        className="p-3 font-semibold text-blue-600 hover:bg-gray-100"
+      >
+        Mark All Read
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
