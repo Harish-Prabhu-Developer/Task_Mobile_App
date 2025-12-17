@@ -25,7 +25,7 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const res = await axios.post(
-        `${API_URL}/taskapp/auth/login`,
+        `https://task-app-kxpr.onrender.com/taskapp/auth/login`,
         credentials
       );
       console.log("Login Response:", res.data);
@@ -49,7 +49,7 @@ export const OTPVerify = createAsyncThunk<
   { rejectValue: string }
 >("auth/OTPVerify", async ({ email, otp }, { rejectWithValue }) => {
   try {
-    const URL = `${API_URL}/taskapp/auth/checksecret/${email}/${otp}`;
+    const URL = `https://task-app-kxpr.onrender.com/taskapp/auth/checksecret/${email}/${otp}`;
     console.log("OTP Verification URL:", URL);
     const res = await axios.get(URL);
     console.log("OTP Verification Response:", res.data);

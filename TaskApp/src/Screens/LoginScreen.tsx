@@ -81,7 +81,7 @@ const LoginScreen = () => {
       const credentials:any = {email:email,password:password};
       const res= await dispatch(loginUser(credentials)).unwrap();
       console.log("Login Response:", res);
-      //navigation.navigate("Home");
+      
       if (res.status==="success" &&res.msg==="OTP sent to the email") {
         navigation.navigate("OTPScreen",{email:email});        
       }else if(res.status==="success" &&res.msg==="Login success"){

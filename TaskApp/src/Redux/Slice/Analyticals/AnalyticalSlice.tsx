@@ -2,11 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from "@env";
-import { ReportData, SummaryData } from "../../../Utils/OurInterFace";
+import {  SummaryData } from "../../../Utils/OurInterFace";
 
 interface analyticalState {
   summaryData: SummaryData | null;
-  reportData: ReportData | null;
+ 
 }
 
 const getHeaders = async () => {
@@ -23,7 +23,7 @@ export const fetchSummaryData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const headers = await getHeaders();
-      const response = await axios.get(`${API_URL}/taskapp/analytics/summary`, headers);
+      const response = await axios.get(`https://task-app-kxpr.onrender.com/taskapp/analytics/summary`, headers);
       return response.data;
     } catch (error: any) {
       console.error("Get Summary Api Error:", error);
@@ -32,23 +32,10 @@ export const fetchSummaryData = createAsyncThunk(
   }
 );
 
-export const fetchreportData = createAsyncThunk(
-  "analytics/report",
-  async (_, { rejectWithValue }) => {
-    try {
-      const headers = await getHeaders();
-      const response = await axios.get(`${API_URL}/taskapp/analytics/report`, headers);
-      return response.data;
-    } catch (error: any) {
-      console.error("Get report Api Error:", error);
-      return rejectWithValue(error.response?.data?.msg || "Failed to fetch report");
-    }
-  }
-);
+
 
 const initialState: analyticalState = {
   summaryData: null,
-  reportData: null,
 };
 
 const AnalyticalSlice = createSlice({
@@ -59,9 +46,6 @@ const AnalyticalSlice = createSlice({
     builder
       .addCase(fetchSummaryData.fulfilled, (state, action) => {
         state.summaryData = action.payload;
-      })
-      .addCase(fetchreportData.fulfilled, (state, action) => {
-        state.reportData = action.payload;
       });
   },
 });

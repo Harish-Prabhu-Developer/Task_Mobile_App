@@ -45,7 +45,7 @@ export const fetchtasks = createAsyncThunk<Task[], void, { rejectValue: string }
     try {
       const headers = await getHeaders();
 
-      const response = await axios.get(`${API_URL}/taskapp/tasks/getall`, headers);
+      const response = await axios.get(`https://task-app-kxpr.onrender.com/taskapp/tasks/getall`, headers);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.msg || "Failed to fetch Tasks");
@@ -59,7 +59,7 @@ export const fetchtaskById = createAsyncThunk<Task, string, { rejectValue: strin
   async (taskId, { rejectWithValue }) => {
     try {
       const headers = await getHeaders();
-      const response = await axios.get(`${API_URL}/taskapp/tasks/get/${taskId}`, headers);
+      const response = await axios.get(`https://task-app-kxpr.onrender.com/taskapp/tasks/get/${taskId}`, headers);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.msg || "Failed to fetch Task");
@@ -73,7 +73,7 @@ export const newTask = createAsyncThunk<Task, Partial<Task>, { rejectValue: stri
   async (taskData, { rejectWithValue }) => {
     try {
       const headers = await getHeaders();
-      const response = await axios.post(`${API_URL}/taskapp/tasks/add`, taskData, headers);
+      const response = await axios.post(`https://task-app-kxpr.onrender.com/taskapp/tasks/add`, taskData, headers);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.msg || "Failed to create Task");
@@ -87,7 +87,7 @@ export const updateTask = createAsyncThunk<Task, { taskId: string; taskData: upd
   async ({ taskId, taskData }, { rejectWithValue }) => {
     try {
       const headers = await getHeaders();
-      const response = await axios.put(`${API_URL}/taskapp/tasks/update/${taskId}`, taskData, headers);
+      const response = await axios.put(`https://task-app-kxpr.onrender.com/taskapp/tasks/update/${taskId}`, taskData, headers);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.msg || "Failed to update Task");
@@ -101,7 +101,7 @@ export const deleteTask = createAsyncThunk<string, string, { rejectValue: string
   async (taskId, { rejectWithValue }) => {
     try {
       const headers = await getHeaders();
-      await axios.delete(`${API_URL}/taskapp/tasks/delete/${taskId}`, headers);
+      await axios.delete(`https://task-app-kxpr.onrender.com/taskapp/tasks/delete/${taskId}`, headers);
       return taskId;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.msg || "Failed to delete Task");
@@ -115,7 +115,7 @@ export const deleteTask = createAsyncThunk<string, string, { rejectValue: string
     async (_, { rejectWithValue }) => {
       try {
         const headers = await getHeaders();
-        const response = await axios.get(`${API_URL}/taskapp/tasks/getnotification`, headers);
+        const response = await axios.get(`https://task-app-kxpr.onrender.com/taskapp/tasks/getnotification`, headers);
         console.log("Tasks getNotification Response:", response.data);
         return response.data;
       } catch (error:any) {

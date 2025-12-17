@@ -100,7 +100,7 @@ export const deleteTask = createAsyncThunk(
         return rejectWithValue(error.response?.data?.msg || "Failed to fetch Notifications");
       }
     }
-  )
+  );
   //Assign Task Slice
   const AssignTaskSlice = createSlice({
     name: "assignTask",
@@ -176,7 +176,7 @@ export const deleteTask = createAsyncThunk(
         })
         .addCase(fetchNotifications.fulfilled,(state,action)=>{
           state.notifications=action.payload;
-        })
+        });
     },
   });
 

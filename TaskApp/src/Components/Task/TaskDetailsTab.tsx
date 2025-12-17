@@ -167,7 +167,7 @@ const TaskDetailsTab: React.FC<TaskProps> = ({ task }) => {
           <>
             <View className="grid grid-cols-2 gap-4">
                           {task?.assets?.map((el, index) => (
-                            <ImageBackground key={index} src={`${API_URL}/${el}`} alt={task?.title} className="w-full rounded h-28 md:h-36 transition-all hover:scale-110" />
+                            <ImageBackground key={index} src={`https://task-app-kxpr.onrender.com/${el}`} alt={task?.title} className="w-full rounded h-28 md:h-36 transition-all hover:scale-110" />
                          ))}
                         </View>
           </>
